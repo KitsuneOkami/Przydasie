@@ -22,13 +22,18 @@ public class Admin implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long adminId;
 
+    @Column(name="username")
     private String username;
 
+    @Column(name="email")
     private String email;
 
+    @Column(name="password")
     private String password;
 
+    @Column(name="first_name")
     private String firstName;
 
+    @Column(name="last_name")
     private String lastName;
 }

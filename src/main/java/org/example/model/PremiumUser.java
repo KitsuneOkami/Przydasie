@@ -24,10 +24,13 @@ public class PremiumUser implements Serializable {
     @OneToOne
     private User userId;
 
+    @Column(name="last_payment")
     private LocalDate lastPayment;
 
+    @Column(name="next_payment")
     private LocalDate nextPayment;
 
+    @Column(name="status")
     private Status status;
 
     enum Status {

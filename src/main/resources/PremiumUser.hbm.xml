@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="PrzydasieDB" table="premium_user">
+        <id name="premium_user_id">
+            <generator class="assigned"/>
+        </id>
+
+        <property name="user_id"/>
+        <property name="last_payment"/>
+        <property name="next_payment"/>
+        <property name="status"/>
+
+    </class>
+
+</hibernate-mapping>

@@ -29,16 +29,22 @@ public class Auction implements Serializable{
     @OneToOne
     private Item itemId;
 
+    @Column(name="description")
     private String description;
 
+    @Column(name="start_time")
     private LocalDate startTime;
 
+    @Column(name="end_time")
     private LocalDate endTime;
 
+    @Column(name="status")
     private AuctionStatus status;
 
+    @Column(name="start_price")
     private BigDecimal startPrice;
 
+    @Column(name="reserve_price")
     private BigDecimal reservePrice;
 
     //status types for auction

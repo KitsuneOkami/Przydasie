@@ -23,7 +23,9 @@ public class Buyer implements Serializable{
     @OneToOne
     private User userId;
 
+    @Column(name="bid_history")
     private String bidHistory;
 
+    @Column(name="phone")
     private String phone;
 }

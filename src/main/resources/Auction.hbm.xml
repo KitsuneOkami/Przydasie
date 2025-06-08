@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="PrzydasieDB" table="auction">
+        <id name="auction_id">
+            <generator class="assigned"/>
+        </id>
+
+        <property name="item_id"/>
+        <property name="description"/>
+        <property name="start_time"/>
+        <property name="end_time"/>
+        <property name="status"/>
+        <property name="starting price"/>
+        <property name="reserve_price"/>
+
+    </class>
+
+</hibernate-mapping>

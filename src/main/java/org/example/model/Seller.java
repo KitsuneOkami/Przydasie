@@ -23,7 +23,9 @@ public class Seller implements Serializable{
     @OneToOne
     private User userId;
 
+    @Column(name="rating")
     private float rating;
 
+    @Column(name="sold_items")
     private int soldItems;
 }
