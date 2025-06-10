@@ -1,14 +1,15 @@
 package org.example.model;
 
+import jakarta.persistence.*;
 import lombok.Data;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
 @Data
 @Entity
 @Table(name = "admin")
-public class Admin implements Serializable{
+public class Admin implements Serializable
+{
     /*
     A-ID(PK): Unique identifier for each admin.
     Username: Username of the admin.
@@ -18,17 +19,17 @@ public class Admin implements Serializable{
     Last Name: Last name of the admin.
     */
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long adminId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long adminId;
 
-    private String username;
+	private String username;
 
-    private String email;
+	private String email;
 
-    private String password;
+	private String password;
 
-    private String firstName;
+	private String firstName;
 
-    private String lastName;
+	private String lastName;
 }

@@ -20,12 +20,12 @@ Podział pracy w zespole:
 ---
 ## Wykonane zadania:
 ### Ogólne wymagania dot. projektu:
-- [ ] Dane przechowywane w relacyjnej bazie.
-- [ ] Dostęp do danych poprzez pulę połączeń skonfigurowaną na serwerze aplikacyjnym.
-- [ ] Podział na warstwy (osobne komponenty dla warstwy danych - wzorzec DAO, logiki i prezentacji, komunikacja między warstwami z użyciem interfejsów), komponenty warstwy danych i logiki powinny działać w kontenerze serwera aplikacyjnego (EJB/CDI), warstwa prezentacji może być aplikacją webową lub aplikacją kliencką (konsolową lub z GUI działającą jako stand-alone client application w kontenerze aplikacji klienckich).
+- [x] Dane przechowywane w relacyjnej bazie.
+- [x] Dostęp do danych poprzez pulę połączeń skonfigurowaną na serwerze aplikacyjnym.
+- [x] Podział na warstwy
 - [ ] Obsługa uwierzytelniania
 - [ ] Testy jednostkowe.
-- [ ] Dziennik zdarzeń *.
+- [x] Dziennik zdarzeń.
 
 ### Funkcjonalność:
 - [ ] Przeglądanie/dodawanie/edycja/usuwanie aukcji.

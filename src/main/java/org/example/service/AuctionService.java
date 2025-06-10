@@ -1,31 +1,42 @@
 package org.example.service;
 
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import org.example.dao.AuctionDao;
 import org.example.model.Auction;
-import org.example.repository.AuctionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
-public class AuctionService {
+import java.util.List;
 
-    @Autowired
-    private AuctionRepository auctionRepository;
+@Stateless
+public class AuctionService
+{
+	@Inject
+	private AuctionDao auctionDao;
 
-    public Auction saveAuction(Auction auction) {
-        return auctionRepository.save(auction);
-    }
+	public void saveAuction(Auction auction)
+	{
+		auctionDao.save(auction);
+	}
 
-    public Auction getAuction(Long id) {
-        return auctionRepository.findById(id).orElse(null);
-    }
+	public Auction getAuction(Long id)
+	{
+		return auctionDao.find(id);
+	}
 
-    public Boolean deleteAuction(Long id) {
-        Auction auction = auctionRepository.findById(id).orElse(null);
-        if (auction == null) {
-            return true;
-        }
+	public List<Auction> findAllAuctions()
+	{
+		return auctionDao.findAll();
+	}
 
-        auctionRepository.deleteById(id);
-        return true;
-    }
+	public boolean deleteAuction(Long id)
+	{
+		Auction auction = getAuction(id);
+		if(auction==null)
+		{
+			return true;
+		}
+
+		auctionDao.delete(auction);
+		return true;
+	}
 }

@@ -1,31 +1,35 @@
 package org.example.service;
 
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import org.example.dao.SellerDao;
 import org.example.model.Seller;
-import org.example.repository.SellerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
-public class SellerService {
+@Stateless
+public class SellerService
+{
+	@Inject
+	private SellerDao sellerDao;
 
-    @Autowired
-    private SellerRepository sellerRepository;
+	public void saveSeller(Seller seller)
+	{
+		sellerDao.save(seller);
+	}
 
-    public Seller saveSeller(Seller seller) {
-        return sellerRepository.save(seller);
-    }
+	public Seller getSeller(Long id)
+	{
+		return sellerDao.find(id);
+	}
 
-    public Seller getSeller(Long id) {
-        return sellerRepository.findById(id).orElse(null);
-    }
+	public boolean deleteSeller(Long id)
+	{
+		Seller seller = getSeller(id);
+		if(seller==null)
+		{
+			return true;
+		}
 
-    public Boolean deleteSeller(Long id) {
-        Seller seller = sellerRepository.findById(id).orElse(null);
-        if (seller == null) {
-            return true;
-        }
-
-        sellerRepository.deleteById(id);
-        return true;
-    }
+		sellerDao.delete(seller);
+		return true;
+	}
 }

@@ -1,31 +1,35 @@
 package org.example.service;
 
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import org.example.dao.PremiumUserDao;
 import org.example.model.PremiumUser;
-import org.example.repository.PremiumUserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
-public class PremiumUserService {
+@Stateless
+public class PremiumUserService
+{
+	@Inject
+	private PremiumUserDao premiumUserDao;
 
-    @Autowired
-    private PremiumUserRepository premiumUserRepository;
+	public void savePremiumUser(PremiumUser premiumUser)
+	{
+		premiumUserDao.save(premiumUser);
+	}
 
-    public PremiumUser savePremiumUser(PremiumUser premiumUser) {
-        return premiumUserRepository.save(premiumUser);
-    }
+	public PremiumUser getPremiumUser(Long id)
+	{
+		return premiumUserDao.find(id);
+	}
 
-    public PremiumUser getPremiumUser(Long id) {
-        return premiumUserRepository.findById(id).orElse(null);
-    }
+	public boolean deletePremiumUser(Long id)
+	{
+		PremiumUser premiumUser = getPremiumUser(id);
+		if(premiumUser==null)
+		{
+			return true;
+		}
 
-    public Boolean deletePremiumUser(Long id) {
-        PremiumUser premiumUser = premiumUserRepository.findById(id).orElse(null);
-        if (premiumUser == null) {
-            return true;
-        }
-
-        premiumUserRepository.deleteById(id);
-        return true;
-    }
+		premiumUserDao.delete(premiumUser);
+		return true;
+	}
 }

@@ -1,13 +1,13 @@
 package org.example.Przydasie;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class PrzydasieApplicationTests {
+import org.junit.Test;
 
+public class PrzydasieApplicationTests
+{
 	@Test
-	void contextLoads() {
-	}
+	public void contextLoads()
+	{
 
+	}
 }

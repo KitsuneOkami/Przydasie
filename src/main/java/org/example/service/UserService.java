@@ -1,31 +1,42 @@
 package org.example.service;
 
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import org.example.dao.UserDao;
 import org.example.model.User;
-import org.example.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
-public class UserService {
+import java.util.List;
 
-    @Autowired
-    private UserRepository userRepository;
+@Stateless
+public class UserService
+{
+	@Inject
+	private UserDao userDao;
 
-    public User saveUser(User user) {
-        return userRepository.save(user);
-    }
+	public List<User> findAllUsers()
+	{
+		return userDao.findAll();
+	}
 
-    public User getUser(Long id) {
-        return userRepository.findById(id).orElse(null);
-    }
+	public void saveUser(User user)
+	{
+		userDao.save(user);
+	}
 
-    public Boolean deleteUser(Long id) {
-        User user = userRepository.findById(id).orElse(null);
-        if (user == null) {
-            return true;
-        }
+	public User getUser(Long id)
+	{
+		return userDao.find(id);
+	}
 
-        userRepository.deleteById(id);
-        return true;
-    }
+	public boolean deleteUser(Long id)
+	{
+		User user = getUser(id);
+		if(user==null)
+		{
+			return true;
+		}
+
+		userDao.delete(user);
+		return true;
+	}
 }

@@ -1,31 +1,40 @@
 package org.example.service;
 
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import org.example.dao.AdminDao;
 import org.example.model.Admin;
-import org.example.repository.AdminRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
-public class AdminService {
+import java.util.List;
 
-    @Autowired
-    private AdminRepository adminRepository;
+@Stateless
+public class AdminService
+{
+	@Inject
+	private AdminDao adminDao;
 
-    public Admin saveAdmin(Admin admin) {
-        return adminRepository.save(admin);
-    }
+	public List<Admin> findAllAdmins()
+	{
+		return adminDao.findAll();
+	}
 
-    public Admin getAdmin(Long id) {
-        return adminRepository.findById(id).orElse(null);
-    }
+	public void saveAdmin(Admin admin)
+	{
+		adminDao.save(admin);
+	}
 
-    public Boolean deleteAdmin(Long id) {
-        Admin admin = adminRepository.findById(id).orElse(null);
-        if (admin == null) {
-            return true;
-        }
+	public Admin getAdmin(Long id)
+	{
+		return adminDao.find(id);
+	}
 
-        adminRepository.deleteById(id);
-        return true;
-    }
+	public boolean deleteAdmin(Long id)
+	{
+		Admin admin = getAdmin(id);
+		if(admin==null)
+			return true;
+
+		adminDao.delete(admin);
+		return true;
+	}
 }

@@ -1,31 +1,37 @@
 package org.example.service;
 
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import org.example.dao.ItemDao;
 import org.example.model.Item;
-import org.example.repository.ItemRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
-public class ItemService {
+import java.util.List;
 
-    @Autowired
-    private ItemRepository itemRepository;
+@Stateless
+public class ItemService
+{
+	@Inject
+	private ItemDao itemDao;
 
-    public Item saveItem(Item item) {
-        return itemRepository.save(item);
-    }
+	public void saveItem(Item item)
+	{
+		itemDao.save(item);
+	}
 
-    public Item getItem(Long id) {
-        return itemRepository.findById(id).orElse(null);
-    }
+	public Item getItem(Long id)
+	{
+		return itemDao.find(id);
+	}
 
-    public Boolean deleteItem(Long id) {
-        Item item = itemRepository.findById(id).orElse(null);
-        if (item == null) {
-            return true;
-        }
+	public boolean deleteItem(Long id)
+	{
+		Item item = getItem(id);
+		if(item==null)
+		{
+			return true;
+		}
 
-        itemRepository.deleteById(id);
-        return true;
-    }
+		itemDao.delete(item);
+		return true;
+	}
 }
