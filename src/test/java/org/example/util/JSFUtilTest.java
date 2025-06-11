@@ -4,7 +4,6 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.application.Application;
-import jakarta.servlet.http.HttpServletRequest;
 import org.example.web.UserSessionBean;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

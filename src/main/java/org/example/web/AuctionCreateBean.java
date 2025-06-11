@@ -37,12 +37,14 @@ public class AuctionCreateBean
 	@Setter
 	private BigDecimal startPrice;
 
-	public void save()
-	{
+	public void save() {
 		User user = userSession.getUser();
-		if(user==null)
-		{
-			// Error msg
+		if (user == null) {
+			JSFUtil.addErrorMessage("User must be logged in");
+			return;
+		}
+
+		if (!validateInput()) {
 			return;
 		}
 
@@ -55,15 +57,36 @@ public class AuctionCreateBean
 		auction.setOwner(user);
 		auction.setStatus(AuctionStatus.ACTIVE);
 
-		auctionService.saveAuction(auction);
-
-		// Redirect to list
-		try
-		{
+		try {
+			auctionService.saveAuction(auction);
 			JSFUtil.redirect("auctions.xhtml");
-		} catch(IOException e)
-		{
-
+		} catch (IOException e) {
+			JSFUtil.addErrorMessage("Error saving auction: " + e.getMessage());
+			// Consider logging the exception
 		}
+	}
+
+	private boolean validateInput() {
+		if (name == null || name.trim().isEmpty()) {
+			JSFUtil.addErrorMessage("Name is required");
+			return false;
+		}
+
+		if (startTime == null || endTime == null) {
+			JSFUtil.addErrorMessage("Start and end times are required");
+			return false;
+		}
+
+		if (startTime.isAfter(endTime)) {
+			JSFUtil.addErrorMessage("Start time must be before end time");
+			return false;
+		}
+
+		if (startPrice == null || startPrice.compareTo(BigDecimal.ZERO) <= 0) {
+			JSFUtil.addErrorMessage("Start price must be positive");
+			return false;
+		}
+
+		return true;
 	}
 }
