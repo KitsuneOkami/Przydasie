@@ -43,6 +43,50 @@ class UserServiceTest {
     }
 
     @Test
+    void findByName_WhenUserExists_ShouldReturnUser() {
+        // Arrange
+        String username = "testUser";
+        User expectedUser = new User();
+        expectedUser.setName(username);
+        when(userDao.findByName(username)).thenReturn(Optional.of(expectedUser));
+
+        // Act
+        User result = userService.findByName(username);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(expectedUser, result);
+        verify(userDao).findByName(username);
+    }
+
+    @Test
+    void findByName_WhenUserDoesNotExist_ShouldReturnNull() {
+        // Arrange
+        String username = "nonexistentUser";
+        when(userDao.findByName(username)).thenReturn(Optional.empty());
+
+        // Act
+        User result = userService.findByName(username);
+
+        // Assert
+        assertNull(result);
+        verify(userDao).findByName(username);
+    }
+
+    @Test
+    void findByName_WhenUsernameIsNull_ShouldReturnNull() {
+        // Arrange
+        when(userDao.findByName(null)).thenReturn(Optional.empty());
+
+        // Act
+        User result = userService.findByName(null);
+
+        // Assert
+        assertNull(result);
+        verify(userDao).findByName(null);
+    }
+
+    @Test
     void authenticate_WhenCredentialsValid_ShouldReturnUser() {
         // Arrange
         when(userDao.findByName(VALID_USERNAME)).thenReturn(Optional.of(user));
