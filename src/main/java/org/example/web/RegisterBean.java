@@ -34,9 +34,9 @@ public class RegisterBean
 	@Inject
 	private
 	UserService userService;
-	@Inject
-	private
-	IdentityStoreHandler identityStoreHandler;
+//	@Inject
+//	private
+//	IdentityStoreHandler identityStoreHandler; for some reason cant deploy with this
 
 	@PostConstruct
 	public void init()
