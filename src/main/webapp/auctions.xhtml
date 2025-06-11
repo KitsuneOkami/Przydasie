@@ -8,10 +8,22 @@
     <ui:define name="pageTitle">PrzydaSie – Aukcje</ui:define>
     <ui:define name="content">
         <h1>Auction List</h1>
-        <h:dataTable value="#{auctionBean.auctions}" var="a" styleClass="table table-bordered">
-            <h:column><f:facet name="header">Opis</f:facet>#{a.description}</h:column>
-            <h:column><f:facet name="header">Rozpoczęcie</f:facet>#{a.startTime}</h:column>
-            <h:column><f:facet name="header">Zakończenie</f:facet>#{a.endTime}</h:column>
-        </h:dataTable>
+        <h:panelGrid columns="1" styleClass="auction-list">
+            <h:outputText value="No auctions available" rendered="#{auctionBean.auctions.isEmpty()}"
+                          style="color: red; font-weight: bold;"/>
+            <h:form>
+                <h:commandButton value="Add New Auction" action="auction_new.xhtml?faces-redirect=true" style="margin-bottom: 20px;"/>
+            </h:form>
+            <ui:repeat value="#{auctionBean.auctions}" var="a">
+                <h:panelGrid columns="2" styleClass="auction-item"
+                             style="margin-bottom: 20px; border: 1px solid #ccc; padding: 10px;">
+                    <h:outputText value="Name:" styleClass="label"/>
+                    <h:outputText value="#{a.name}" styleClass="value"/>
+                    <h:commandButton value="View Details" action="#{auctionBean.viewDetails}">
+                        <f:param name="id" value="#{a.auctionId}"/>
+                    </h:commandButton>
+                </h:panelGrid>
+            </ui:repeat>
+        </h:panelGrid>
     </ui:define>
 </ui:composition>

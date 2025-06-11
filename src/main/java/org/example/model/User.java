@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Set;
 
 @Data
 @Entity
@@ -36,6 +37,9 @@ public class User implements Serializable
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	protected Role role;
+
+	@ManyToMany(mappedBy = "bidders")
+	private Set<Bid> bids;
 
 	public enum Role
 	{

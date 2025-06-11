@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebFilter(urlPatterns = {"/auctions.xhtml", "/user/*"})
+@WebFilter(urlPatterns = {"/auction_new.xhtml", "/auction_details.xhtml", "/user/*"})
 public class AuthFilter implements Filter
 {
 	@Override

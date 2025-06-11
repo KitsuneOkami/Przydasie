@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Entity
@@ -26,8 +27,7 @@ public class Auction implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long auctionId;
 
-    @OneToOne
-    private Item itemId;
+    private String name;
 
     private String description;
 
@@ -40,6 +40,9 @@ public class Auction implements Serializable{
     private BigDecimal startPrice;
 
     private BigDecimal reservePrice;
+
+    @OneToMany(mappedBy = "auction", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Bid> bids;
 
     //status types for auction
     enum AuctionStatus {

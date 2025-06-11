@@ -4,6 +4,7 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import org.example.dao.AuctionDao;
 import org.example.model.Auction;
+import org.example.model.Bid;
 
 import java.util.List;
 
@@ -26,6 +27,16 @@ public class AuctionService
 	public List<Auction> findAllAuctions()
 	{
 		return auctionDao.findAll();
+	}
+
+	public List<Bid> getAllAuctionBids(Long auctionId)
+	{
+		Auction auction = getAuction(auctionId);
+		if(auction==null)
+		{
+			return List.of(); //Return an empty list if the auction does not exist
+		}
+		return auction.getBids();
 	}
 
 	public boolean deleteAuction(Long id)

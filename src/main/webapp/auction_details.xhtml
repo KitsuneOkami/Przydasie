@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="template_contentpage.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <ui:define name="pageTitle">Auction Details</ui:define>
+    <ui:define name="content">
+        <h1>Details for Auction: #{auctionBean.auction.name}</h1>
+        <h:panelGrid columns="2" style="border: 1px solid #ccc; padding: 10px;">
+            <h:outputText value="Description:" />
+            <h:outputText value="#{auctionBean.auction.description}" />
+            <h:outputText value="Status:" />
+            <h:outputText value="#{auctionBean.auction.status}" />
+            <h:outputText value="Start Date:" />
+            <h:outputText value="#{auctionBean.auction.startTime}" />
+            <h:outputText value="End Date:" />
+            <h:outputText value="#{auctionBean.auction.endTime}" />
+        </h:panelGrid>
+    </ui:define>
+</ui:composition>
