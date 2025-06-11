@@ -10,10 +10,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.example.model.Auction;
 import org.example.model.Auction.AuctionStatus;
-import org.example.model.Bid;
 import org.example.model.User;
 import org.example.service.AuctionService;
-import org.example.service.BidService;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -27,9 +25,6 @@ public class AuctionDetailsBean implements Serializable
 	private static final Logger logger = Logger.getLogger(AuctionDetailsBean.class.getName());
 	@Inject
 	private AuctionService auctionService;
-
-	@Inject
-	private BidService bidService;
 
 	@Inject
 	private UserSessionBean userSession;
@@ -49,8 +44,11 @@ public class AuctionDetailsBean implements Serializable
 	{
 		logger.log(Level.INFO, "Initializing AuctionDetailsBean with auction ID: {0}", id);
 		if(id!=null)
-			auction = auctionService.getAuction(id);
-		if(auction == null) {
+		{
+			auction = auctionService.getAuctionWithBids(id);
+		}
+		if(auction==null)
+		{
 			logger.log(Level.WARNING, "Auction with ID {0} could not be found.", id);
 		}
 	}
@@ -91,14 +89,7 @@ public class AuctionDetailsBean implements Serializable
 			return;
 		}
 
-		Bid newBid = new Bid();
-		newBid.setBidAmount(bidAmount);
-		newBid.setBidder(user);
-		newBid.setAuction(auction);
-		bidService.saveBid(newBid);
-
-		auction.getBids().add(newBid);
-		auctionService.saveAuction(auction);
+		auctionService.addBidToAuction(auction.getAuctionId(), user, bidAmount);
 		logger.log(Level.INFO, "Bid of {0} placed successfully on auction {1} by user {2}.", new Object[]{bidAmount, auction.getAuctionId(), user.getName()});
 		FacesContext.getCurrentInstance().addMessage(null,
 				new FacesMessage(FacesMessage.SEVERITY_INFO, "Bid placed successfully.", null));

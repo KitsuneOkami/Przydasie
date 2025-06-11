@@ -2,11 +2,15 @@ package org.example.service;
 
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.example.dao.AuctionDao;
 import org.example.model.Auction;
 import org.example.model.Bid;
+import org.example.model.User;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,14 +39,14 @@ public class AuctionService
 		return auctionDao.findAll();
 	}
 
-	public List<Bid> getAllAuctionBids(Long auctionId)
+	public Set<Bid> getAllAuctionBids(Long auctionId)
 	{
 		logger.log(Level.INFO, "Retrieving all bids for auction ID: {0}", auctionId);
 		Auction auction = getAuction(auctionId);
 		if(auction==null)
 		{
 			logger.log(Level.WARNING, "Auction with ID {0} not found. Cannot retrieve bids.", auctionId);
-			return List.of();
+			return Set.of();
 		}
 		return auction.getBids();
 	}
@@ -59,5 +63,15 @@ public class AuctionService
 		auctionDao.delete(auction);
 		logger.log(Level.INFO, "Auction with ID {0} deleted successfully.", id);
 		return true;
+	}
+
+	public void addBidToAuction(Long auctionId, User user, BigDecimal bidAmount)
+	{
+		auctionDao.addBid(auctionId, user, bidAmount);
+	}
+
+	public Auction getAuctionWithBids(Long id)
+	{
+		return auctionDao.findWithBids(id);
 	}
 }

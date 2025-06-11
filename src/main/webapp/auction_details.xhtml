@@ -6,8 +6,8 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <ui:define name="pageTitle">PrzydaSie - Szczegóły Aukcji</ui:define>
     <f:metadata>
-        <f:viewParam name="id" value="#{auctionDetailsBean.id}" />
-        <f:event type="preRenderView" listener="#{auctionDetailsBean.init}" />
+        <f:viewParam name="id" value="#{auctionDetailsBean.id}"/>
+        <f:event type="preRenderView" listener="#{auctionDetailsBean.init}"/>
     </f:metadata>
 
     <!-- Message box -->
@@ -47,15 +47,21 @@
 
         <!-- List of Bids -->
         <h2>Oferty:</h2>
-        <h:dataTable value="#{auctionDetailsBean.auction.bids}" var="bid" styleClass="table table-striped">
-            <h:column>
-                <f:facet name="header">Użytkownicy</f:facet>
-                <h:outputText value="#{bid.bidders.stream().map(b -> b.name).collect(Collectors.joining(', '))}"/>
-            </h:column>
-            <h:column>
-                <f:facet name="header">Kwota</f:facet>
-                <h:outputText value="#{bid.bidAmount}"/>
-            </h:column>
-        </h:dataTable>
+        <h:panelGroup rendered="#{not empty auctionDetailsBean.auction.bids}">
+            <h3>Bidders</h3>
+            <ul>
+                <ui:repeat value="#{auctionDetailsBean.auction.bids}" var="bid">
+                    <li>
+                        <h:outputText value="#{bid.bidder.name}"/>
+                        <span> - </span>
+                        <h:outputText value="#{bid.bidAmount}"/>
+                    </li>
+                </ui:repeat>
+            </ul>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{empty auction.bids}">
+            <em>No bids yet. Be the first to strike!</em>
+        </h:panelGroup>
     </ui:define>
 </ui:composition>
