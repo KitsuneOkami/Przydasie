@@ -1,27 +1,46 @@
 package org.example.model;
 
+import jakarta.persistence.*;
 import lombok.Data;
 
-import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Data
 @Entity
 @Table(name = "user")
-public class User implements Serializable {
-    /*
-    U-ID(PK): Unique identifier for each user.
-    Name: Username of the user.
-    Email: Email address of the user.
-    Password: Encrypted password of the user.
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+@Inheritance(strategy = InheritanceType.JOINED)
+public class User implements Serializable
+{
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long userId;
 
-    private String name;
+	/**
+	 * Username of the user
+	 */
+	@Column(nullable = false, unique = true)
+	private String name;
 
-    private String email;
+	/**
+	 * Email address of the user
+	 */
+	@Column(nullable = false, unique = true)
+	private String email;
 
-    private String password;
+	/**
+	 * Encrypted password of the user
+	 */
+	@Column(nullable = false)
+	private String password;
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	protected Role role;
+
+	public enum Role
+	{
+		USER,
+		ADMIN,
+		PAWN_SHOP
+	}
 }
