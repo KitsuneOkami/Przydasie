@@ -12,9 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -30,7 +28,7 @@ class AuctionServiceTest {
 
     private Auction auction1;
     private Auction auction2;
-    private List<Bid> bids;
+    private Set<Bid> bids;
 
     @BeforeEach
     void setUp() {
@@ -43,7 +41,7 @@ class AuctionServiceTest {
         auction2.setAuctionId(2L);
         auction2.setDescription("Test Auction 2");
 
-        bids = new ArrayList<>();
+        bids = new HashSet<>();
         Bid bid1 = new Bid();
         bid1.setBidId(1L);
         bid1.setBidAmount(new BigDecimal("100.00"));
@@ -128,7 +126,7 @@ class AuctionServiceTest {
         when(auctionDao.find(1L)).thenReturn(auction1);
 
         // Act
-        List<Bid> result = auctionService.getAllAuctionBids(1L);
+        Set<Bid> result = auctionService.getAllAuctionBids(1L);
 
         // Assert
         assertNotNull(result);
@@ -143,7 +141,7 @@ class AuctionServiceTest {
         when(auctionDao.find(999L)).thenReturn(null);
 
         // Act
-        List<Bid> result = auctionService.getAllAuctionBids(999L);
+        Set<Bid> result = auctionService.getAllAuctionBids(999L);
 
         // Assert
         assertNotNull(result);

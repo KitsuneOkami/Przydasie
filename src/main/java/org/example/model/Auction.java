@@ -2,17 +2,21 @@ package org.example.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "auction")
 public class Auction implements Serializable
 {
+	private static final Logger logger = Logger.getLogger(Auction.class.getName());
     /*
     A-ID(PK): Unique identifier for each auction.
     I-ID(FK): Foreign key referencing item table.
@@ -26,6 +30,7 @@ public class Auction implements Serializable
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@EqualsAndHashCode.Include
 	private Long auctionId;
 
 	private String name;
@@ -45,8 +50,20 @@ public class Auction implements Serializable
 
 	private BigDecimal reservePrice;
 
-	@OneToMany(mappedBy = "auction", fetch = FetchType.EAGER)
-	private List<Bid> bids;
+	@OneToMany(mappedBy = "auction", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private Set<Bid> bids;
+
+	public void addBid(Bid bid)
+	{
+		bids.add(bid);
+		bid.setAuction(this); // maintain both sides
+	}
+
+	public void removeBid(Bid bid)
+	{
+		bids.remove(bid);
+		bid.setAuction(null); // maintain both sides
+	}
 
 	//status types for auction
 	public enum AuctionStatus

@@ -14,17 +14,19 @@ import org.example.util.JSFUtil;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Named
 @RequestScoped
 public class AuctionCreateBean
 {
+	private static final Logger logger = Logger.getLogger(AuctionCreateBean.class.getName());
 	@Inject
 	private AuctionService auctionService;
 
 	@Inject
 	private UserSessionBean userSession;
-
 	@Getter
 	@Setter
 	private String name, description;
@@ -37,14 +39,13 @@ public class AuctionCreateBean
 	@Setter
 	private BigDecimal startPrice;
 
-	public void save() {
+	public void save()
+	{
+		logger.log(Level.INFO, "User {0} attempting to create auction ''{1}''", new Object[]{userSession.getUsername(), name});
 		User user = userSession.getUser();
-		if (user == null) {
-			JSFUtil.addErrorMessage("User must be logged in");
-			return;
-		}
-
-		if (!validateInput()) {
+		if(user==null)
+		{
+			logger.log(Level.SEVERE, "Auction creation failed: User not logged in.");
 			return;
 		}
 
@@ -57,36 +58,15 @@ public class AuctionCreateBean
 		auction.setOwner(user);
 		auction.setStatus(AuctionStatus.ACTIVE);
 
-		try {
-			auctionService.saveAuction(auction);
+		auctionService.saveAuction(auction);
+		logger.log(Level.INFO, "Auction ''{0}'' created successfully by user ''{1}''", new Object[]{name, user.getName()});
+
+		try
+		{
 			JSFUtil.redirect("auctions.xhtml");
-		} catch (IOException e) {
-			JSFUtil.addErrorMessage("Error saving auction: " + e.getMessage());
-			// Consider logging the exception
+		} catch(IOException e)
+		{
+			logger.log(Level.SEVERE, "Error redirecting after auction creation.", e);
 		}
-	}
-
-	private boolean validateInput() {
-		if (name == null || name.trim().isEmpty()) {
-			JSFUtil.addErrorMessage("Name is required");
-			return false;
-		}
-
-		if (startTime == null || endTime == null) {
-			JSFUtil.addErrorMessage("Start and end times are required");
-			return false;
-		}
-
-		if (startTime.isAfter(endTime)) {
-			JSFUtil.addErrorMessage("Start time must be before end time");
-			return false;
-		}
-
-		if (startPrice == null || startPrice.compareTo(BigDecimal.ZERO) <= 0) {
-			JSFUtil.addErrorMessage("Start price must be positive");
-			return false;
-		}
-
-		return true;
 	}
 }

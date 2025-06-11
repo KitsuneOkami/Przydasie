@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package org.example.util;
-
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
@@ -12,16 +11,22 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.example.web.UserSessionBean;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class JSFUtil
 {
+	private static final Logger logger = Logger.getLogger(JSFUtil.class.getName());
+
 	public static void addErrorMessage(String message)
 	{
+		logger.log(Level.WARNING, "Adding error message: {0}", message);
 		addMessage(FacesMessage.SEVERITY_ERROR, message);
 	}
 
 	public static void addInfoMessage(String message)
 	{
+		logger.log(Level.INFO, "Adding info message: {0}", message);
 		addMessage(FacesMessage.SEVERITY_INFO, message);
 	}
 
@@ -31,6 +36,7 @@ public class JSFUtil
 		{
 			view = "/"+view;
 		}
+		logger.log(Level.INFO, "Redirecting to view: {0}", view);
 		FacesContext context = FacesContext.getCurrentInstance();
 		ExternalContext externalContext = context.getExternalContext();
 		HttpServletRequest request = (HttpServletRequest)externalContext.getRequest();
@@ -39,6 +45,7 @@ public class JSFUtil
 
 	public static void invalidateSession()
 	{
+		logger.log(Level.INFO, "Invalidating session");
 		ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
 		externalContext.invalidateSession();
 	}
@@ -61,12 +68,12 @@ public class JSFUtil
 		{
 			try
 			{
+				logger.log(Level.INFO, "Redirecting user with logged status {0} to view: {1}", new Object[]{logged, view});
 				redirect(view);
 			} catch(IOException e)
 			{
-				// Log it if needed
+				logger.log(Level.SEVERE, "Error during redirect", e);
 			}
 		}
 	}
 }
-

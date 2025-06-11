@@ -1,27 +1,33 @@
 package org.example.model;
 
-import lombok.Data;
-
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.logging.Logger;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "bid")
-public class Bid implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bidId;
+public class Bid implements Serializable
+{
+	private static final Logger logger = Logger.getLogger(Bid.class.getName());
 
-    @ManyToOne
-    @JoinColumn(name = "auction_id", nullable = false)
-    private Auction auction;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@EqualsAndHashCode.Include
+	private Long bidId;
 
-    @ManyToOne
-    private User bidder;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "auction_id", nullable = false)
+	private Auction auction;
 
-    private BigDecimal bidAmount;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User bidder;
+
+	private BigDecimal bidAmount;
 }
