@@ -5,43 +5,49 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <ui:define name="pageTitle">PrzydaSie - Szczegóły Aukcji</ui:define>
+    <f:metadata>
+        <f:viewParam name="id" value="#{auctionDetailsBean.id}" />
+        <f:event type="preRenderView" listener="#{auctionDetailsBean.init}" />
+    </f:metadata>
 
     <!-- Message box -->
     <h:messages globalOnly="false" layout="table" styleClass="alert alert-danger"/>
 
     <ui:define name="content">
-        <h1>Szczegóły Aukcji: #{auctionBean.auction.name}</h1>
+        <h1>Szczegóły Aukcji: #{auctionDetailsBean.auction.name}</h1>
         <h:panelGrid columns="2" style="border: 1px solid #ccc; padding: 10px;">
             <h:outputText value="Opis:"/>
-            <h:outputText value="#{auctionBean.auction.description}"/>
+            <h:outputText value="#{auctionDetailsBean.auction.description}"/>
             <h:outputText value="Status:"/>
-            <h:outputText value="#{auctionBean.auction.status}"/>
+            <h:outputText value="#{auctionDetailsBean.auction.status}"/>
             <h:outputText value="Data Rozpoczęcia:"/>
-            <h:outputText value="#{auctionBean.auction.startTime}"/>
+            <h:outputText value="#{auctionDetailsBean.auction.startTime}"/>
             <h:outputText value="Data Zakończenia:"/>
-            <h:outputText value="#{auctionBean.auction.endTime}"/>
+            <h:outputText value="#{auctionDetailsBean.auction.endTime}"/>
         </h:panelGrid>
 
         <!-- Auction Owner Actions -->
-        <h:panelGroup rendered="#{auctionBean.isAuctionOwner(auctionBean.auction.auctionId)}">
-            <h:commandButton value="Usuń Aukcję" action="#{auctionBean.deleteAuction(auctionBean.auction.auctionId)}"
-                             class="btn btn-danger"/>
+        <h:panelGroup rendered="#{auctionDetailsBean.isAuctionOwner()}">
+            <h:form>
+                <h:commandButton value="Usuń Aukcję" action="#{auctionDetailsBean.deleteAuction}"
+                                 class="btn btn-danger"/>
+            </h:form>
         </h:panelGroup>
 
         <!-- Bidding Form -->
-        <h:panelGroup rendered="#{auctionBean.canPlaceBid(auctionBean.auction.auctionId)}">
+        <h:panelGroup rendered="#{auctionDetailsBean.canPlaceBid()}">
             <h:form>
                 <h:outputLabel for="bidAmount" value="Kwota:"/>
-                <h:inputText id="bidAmount" value="#{auctionBean.bidAmount}" required="true"
+                <h:inputText id="bidAmount" value="#{auctionDetailsBean.bidAmount}" required="true"
                              requiredMessage="Kwota jest wymagana"/>
-                <h:commandButton value="Złóż ofertę" action="#{auctionBean.placeBid(auctionBean.auction.auctionId)}"
+                <h:commandButton value="Złóż ofertę" action="#{auctionDetailsBean.placeBid}"
                                  class="btn btn-primary"/>
             </h:form>
         </h:panelGroup>
 
         <!-- List of Bids -->
         <h2>Oferty:</h2>
-        <h:dataTable value="#{auctionBean.auction.bids}" var="bid" styleClass="table table-striped">
+        <h:dataTable value="#{auctionDetailsBean.auction.bids}" var="bid" styleClass="table table-striped">
             <h:column>
                 <f:facet name="header">Użytkownicy</f:facet>
                 <h:outputText value="#{bid.bidders.stream().map(b -> b.name).collect(Collectors.joining(', '))}"/>

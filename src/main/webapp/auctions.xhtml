@@ -9,22 +9,22 @@
     <ui:define name="content">
         <h1>Auction List</h1>
         <h:panelGrid columns="1" styleClass="auction-list">
-            <h:outputText value="No auctions available" rendered="#{auctionBean.auctions.isEmpty()}"
+            <h:outputText value="No auctions available" rendered="#{auctionListBean.auctions.isEmpty()}"
                           style="color: red; font-weight: bold;"/>
             <h:form>
                 <h:commandButton value="Add New Auction" action="auction_new.xhtml?faces-redirect=true"
                                  style="margin-bottom: 20px;"/>
             </h:form>
-            <ui:repeat value="#{auctionBean.auctions}" var="a">
+
+            <ui:repeat value="#{auctionListBean.auctions}" var="a">
                 <h:panelGrid columns="2" styleClass="auction-item"
                              style="margin-bottom: 20px; border: 1px solid #ccc; padding: 10px;">
                     <h:outputText value="Name:" styleClass="label"/>
                     <h:outputText value="#{a.name}" styleClass="value"/>
                     <h:form>
-                        <h:commandButton value="View Details" action="auction_details.xhtml">
-                            <f:param name="faces-redirect" value="true"/>
-                            <f:param name="id" value="#{a.auctionId}"/>
-                        </h:commandButton>
+                        <h:link value="View Details" outcome="auction_details.xhtml">
+                            <f:param name="id" value="#{a.auctionId}" />
+                        </h:link>
                     </h:form>
                 </h:panelGrid>
             </ui:repeat>

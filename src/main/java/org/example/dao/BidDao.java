@@ -8,4 +8,6 @@ import java.util.List;
 public interface BidDao extends AbstractDao<Bid, Long>
 {
 	List<Bid> findAll();
+
+
 }

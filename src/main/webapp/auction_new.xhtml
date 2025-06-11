@@ -20,7 +20,7 @@
                         <label for="startPrice" class="form-label">Cena Początkowa:</label>
                     </div>
                     <div class="col-md-8">
-                        <h:inputText id="startPrice" value="#{auctionBean.startPrice}" class="form-control"
+                        <h:inputText id="startPrice" value="#{auctionCreateBean.startPrice}" class="form-control"
                                      required="true">
                             <f:convertNumber pattern="#,##0.00"/>
                         </h:inputText>
@@ -33,7 +33,7 @@
                         <label for="name" class="form-label">Nazwa:</label>
                     </div>
                     <div class="col-md-8">
-                        <h:inputText id="name" value="#{auctionBean.name}" class="form-control" required="true"/>
+                        <h:inputText id="name" value="#{auctionCreateBean.name}" class="form-control" required="true"/>
                     </div>
                 </div>
 
@@ -43,7 +43,7 @@
                         <label for="description" class="form-label">Opis:</label>
                     </div>
                     <div class="col-md-8">
-                        <h:inputTextarea id="description" value="#{auctionBean.description}" class="form-control"/>
+                        <h:inputTextarea id="description" value="#{auctionCreateBean.description}" class="form-control"/>
                     </div>
                 </div>
 
@@ -53,7 +53,7 @@
                         <label for="startDate" class="form-label">Data Rozpoczęcia:</label>
                     </div>
                     <div class="col-md-8">
-                        <h:inputText id="startDate" value="#{auctionBean.startTime}" type="datetime-local"
+                        <h:inputText id="startDate" value="#{auctionCreateBean.startTime}" type="datetime-local"
                                      label="Data Rozpoczęcia">
                             <f:convertDateTime pattern="yyyy-MM-dd'T'HH:mm" type="localDateTime"/>
                             <f:validator validatorId="futureDateValidator"/>
@@ -69,7 +69,7 @@
                     </div>
                     <div class="col-md-8">
 
-                        <h:inputText id="endDate" value="#{auctionBean.endTime}" type="datetime-local"
+                        <h:inputText id="endDate" value="#{auctionCreateBean.endTime}" type="datetime-local"
                                      label="Data Zakończenia">
                             <f:convertDateTime pattern="yyyy-MM-dd'T'HH:mm" type="localDateTime"/>
                             <f:validator validatorId="futureDateValidator"/>
@@ -80,7 +80,7 @@
                 <!-- Save auction -->
                 <div class="row">
                     <div class="col-md-12 text-end">
-                        <h:commandButton value="Zapisz Aukcję" action="#{auctionBean.save}" class="btn btn-primary"/>
+                        <h:commandButton value="Zapisz Aukcję" action="#{auctionCreateBean.save}" class="btn btn-primary"/>
                     </div>
                 </div>
             </h:form>
