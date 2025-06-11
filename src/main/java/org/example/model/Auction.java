@@ -7,12 +7,14 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Data
 @Entity
 @Table(name = "auction")
 public class Auction implements Serializable
 {
+	private static final Logger logger = Logger.getLogger(Auction.class.getName());
     /*
     A-ID(PK): Unique identifier for each auction.
     I-ID(FK): Foreign key referencing item table.

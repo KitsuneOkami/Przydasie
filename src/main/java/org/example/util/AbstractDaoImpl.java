@@ -1,8 +1,9 @@
 package org.example.util;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.Getter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Pabilo8
@@ -10,14 +11,16 @@ import lombok.Getter;
  */
 public abstract class AbstractDaoImpl<T, K> implements AbstractDao<T, K>
 {
+	private static final Logger logger = Logger.getLogger(AbstractDaoImpl.class.getName());
+
 	@PersistenceContext(unitName = "auctionPU")
 	@Getter
 	private EntityManager entityManager;
-
 	@Override
-	public void save(T admin)
+	public void save(T entity)
 	{
-		entityManager.persist(admin);
+		logger.log(Level.INFO, "Saving entity: {0}", entity);
+		entityManager.persist(entity);
 	}
 
 	@Override
@@ -26,12 +29,14 @@ public abstract class AbstractDaoImpl<T, K> implements AbstractDao<T, K>
 	@Override
 	public void update(T entity)
 	{
+		logger.log(Level.INFO, "Updating entity: {0}", entity);
 		entityManager.merge(entity);
 	}
 
 	@Override
 	public void delete(T entity)
 	{
+		logger.log(Level.INFO, "Deleting entity: {0}", entity);
 		if(entityManager.contains(entity))
 			entityManager.remove(entity);
 		else

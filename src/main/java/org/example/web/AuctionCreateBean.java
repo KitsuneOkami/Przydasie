@@ -14,17 +14,19 @@ import org.example.util.JSFUtil;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Named
 @RequestScoped
 public class AuctionCreateBean
 {
+	private static final Logger logger = Logger.getLogger(AuctionCreateBean.class.getName());
 	@Inject
 	private AuctionService auctionService;
 
 	@Inject
 	private UserSessionBean userSession;
-
 	@Getter
 	@Setter
 	private String name, description;
@@ -39,10 +41,11 @@ public class AuctionCreateBean
 
 	public void save()
 	{
+		logger.log(Level.INFO, "User {0} attempting to create auction ''{1}''", new Object[]{userSession.getUsername(), name});
 		User user = userSession.getUser();
 		if(user==null)
 		{
-			// Error msg
+			logger.log(Level.SEVERE, "Auction creation failed: User not logged in.");
 			return;
 		}
 
@@ -56,14 +59,14 @@ public class AuctionCreateBean
 		auction.setStatus(AuctionStatus.ACTIVE);
 
 		auctionService.saveAuction(auction);
+		logger.log(Level.INFO, "Auction ''{0}'' created successfully by user ''{1}''", new Object[]{name, user.getName()});
 
-		// Redirect to list
 		try
 		{
 			JSFUtil.redirect("auctions.xhtml");
 		} catch(IOException e)
 		{
-
+			logger.log(Level.SEVERE, "Error redirecting after auction creation.", e);
 		}
 	}
 }
