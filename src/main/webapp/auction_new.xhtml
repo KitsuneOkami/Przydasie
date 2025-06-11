@@ -4,51 +4,83 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
-    <ui:define name="pageTitle">New Auction</ui:define>
+    <ui:define name="pageTitle">PrzydaSie - Nowa Aukcja</ui:define>
     <ui:define name="content">
         <div class="container mt-4">
-            <h1 class="mb-4">Create New Auction</h1>
+            <h1 class="mb-4">Nowa Aukcja</h1>
+
+            <!-- Message box -->
+            <!-- Global feedback (e.g. "Invalid credentials") -->
+            <h:messages globalOnly="false" layout="table" styleClass="alert alert-danger"/>
+
             <h:form>
+                <!-- Starting Price -->
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <label for="name" class="form-label">Name:</label>
+                        <label for="startPrice" class="form-label">Cena Początkowa:</label>
                     </div>
                     <div class="col-md-8">
-                        <h:inputText id="name" value="#{auctionBean.auction.name}" class="form-control"/>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="description" class="form-label">Description:</label>
-                    </div>
-                    <div class="col-md-8">
-                        <h:inputTextarea id="description" value="#{auctionBean.auction.description}"
-                                         class="form-control"/>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="startDate" class="form-label">Start Date:</label>
-                    </div>
-                    <div class="col-md-8">
-                        <h:inputText id="startDate" value="#{auctionBean.auction.startTime}">
-                            <f:convertDateTime pattern="yyyy-MM-dd" type="localDate"/>
+                        <h:inputText id="startPrice" value="#{auctionBean.startPrice}" class="form-control"
+                                     required="true">
+                            <f:convertNumber pattern="#,##0.00"/>
                         </h:inputText>
                     </div>
                 </div>
+
+                <!-- Name -->
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <label for="endDate" class="form-label">End Date:</label>
+                        <label for="name" class="form-label">Nazwa:</label>
                     </div>
                     <div class="col-md-8">
-                        <h:inputText id="endDate" value="#{auctionBean.auction.endTime}">
-                            <f:convertDateTime pattern="yyyy-MM-dd" type="localDate"/>
+                        <h:inputText id="name" value="#{auctionBean.name}" class="form-control" required="true"/>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="description" class="form-label">Opis:</label>
+                    </div>
+                    <div class="col-md-8">
+                        <h:inputTextarea id="description" value="#{auctionBean.description}" class="form-control"/>
+                    </div>
+                </div>
+
+                <!-- Start Date -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="startDate" class="form-label">Data Rozpoczęcia:</label>
+                    </div>
+                    <div class="col-md-8">
+                        <h:inputText id="startDate" value="#{auctionBean.startTime}" type="datetime-local"
+                                     label="Data Rozpoczęcia">
+                            <f:convertDateTime pattern="yyyy-MM-dd'T'HH:mm" type="localDateTime"/>
+                            <f:validator validatorId="futureDateValidator"/>
+                        </h:inputText>
+
+                    </div>
+                </div>
+
+                <!-- End Date -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="endDate" class="form-label">Data Zakończenia:</label>
+                    </div>
+                    <div class="col-md-8">
+
+                        <h:inputText id="endDate" value="#{auctionBean.endTime}" type="datetime-local"
+                                     label="Data Zakończenia">
+                            <f:convertDateTime pattern="yyyy-MM-dd'T'HH:mm" type="localDateTime"/>
+                            <f:validator validatorId="futureDateValidator"/>
                         </h:inputText>
                     </div>
                 </div>
+
+                <!-- Save auction -->
                 <div class="row">
                     <div class="col-md-12 text-end">
-                        <h:commandButton value="Save Auction" action="#{auctionBean.save}" class="btn btn-primary"/>
+                        <h:commandButton value="Zapisz Aukcję" action="#{auctionBean.save}" class="btn btn-primary"/>
                     </div>
                 </div>
             </h:form>

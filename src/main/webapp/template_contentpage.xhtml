@@ -29,7 +29,8 @@
                                 Zalogowano jako <strong>#{sessionScope.username}</strong>
                             </c:when>
                             <c:otherwise>
-                                Not signed in
+                                <h:link value="Zaloguj" outcome="login.xhtml" styleClass="nav-link"/>
+                                <h:link value="Zarejestruj się" outcome="register.xhtml" styleClass="nav-link"/>
                             </c:otherwise>
                         </c:choose>
                     </span>

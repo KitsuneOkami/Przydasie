@@ -2,8 +2,8 @@
 <ui:composition template="template_contentpage.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
 >
     <ui:define name="pageTitle">PrzydaSie – Aukcje</ui:define>
     <ui:define name="content">
@@ -12,16 +12,19 @@
             <h:outputText value="No auctions available" rendered="#{auctionBean.auctions.isEmpty()}"
                           style="color: red; font-weight: bold;"/>
             <h:form>
-                <h:commandButton value="Add New Auction" action="auction_new.xhtml?faces-redirect=true" style="margin-bottom: 20px;"/>
+                <h:commandButton value="Add New Auction" action="auction_new.xhtml?faces-redirect=true"
+                                 style="margin-bottom: 20px;"/>
             </h:form>
             <ui:repeat value="#{auctionBean.auctions}" var="a">
                 <h:panelGrid columns="2" styleClass="auction-item"
                              style="margin-bottom: 20px; border: 1px solid #ccc; padding: 10px;">
                     <h:outputText value="Name:" styleClass="label"/>
                     <h:outputText value="#{a.name}" styleClass="value"/>
-                    <h:commandButton value="View Details" action="#{auctionBean.viewDetails}">
-                        <f:param name="id" value="#{a.auctionId}"/>
-                    </h:commandButton>
+                    <h:form>
+                        <h:commandButton value="View Details" action="auction_details.xhtml">
+                            <f:param name="id" value="#{a.auctionId}"/>
+                        </h:commandButton>
+                    </h:form>
                 </h:panelGrid>
             </ui:repeat>
         </h:panelGrid>

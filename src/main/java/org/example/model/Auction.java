@@ -1,17 +1,18 @@
 package org.example.model;
 
+import jakarta.persistence.*;
 import lombok.Data;
 
-import jakarta.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @Entity
 @Table(name = "auction")
-public class Auction implements Serializable{
+public class Auction implements Serializable
+{
     /*
     A-ID(PK): Unique identifier for each auction.
     I-ID(FK): Foreign key referencing item table.
@@ -23,30 +24,34 @@ public class Auction implements Serializable{
     Reserve Price: Minimum price required for the auction to proceed.
     */
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long auctionId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long auctionId;
 
-    private String name;
+	private String name;
 
-    private String description;
+	private String description;
 
-    private LocalDate startTime;
+	@ManyToOne(fetch = FetchType.EAGER)
+	private User owner;
 
-    private LocalDate endTime;
+	private LocalDateTime startTime;
 
-    private AuctionStatus status;
+	private LocalDateTime endTime;
 
-    private BigDecimal startPrice;
+	private AuctionStatus status;
 
-    private BigDecimal reservePrice;
+	private BigDecimal startPrice;
 
-    @OneToMany(mappedBy = "auction", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Bid> bids;
+	private BigDecimal reservePrice;
 
-    //status types for auction
-    enum AuctionStatus {
-        ACTIVE,
-        ENDED
-    }
+	@OneToMany(mappedBy = "auction", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Bid> bids;
+
+	//status types for auction
+	public enum AuctionStatus
+	{
+		ACTIVE,
+		ENDED
+	}
 }

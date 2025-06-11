@@ -24,7 +24,6 @@ public class AuthFilter implements Filter
 				&&(session.getAttribute("username")!=null)
 				&&(!session.getAttribute("username").toString().isEmpty());
 
-
 		if(loggedIn)
 			chain.doFilter(req, res);
 		else
