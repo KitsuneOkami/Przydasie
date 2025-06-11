@@ -45,7 +45,7 @@ public class Auction implements Serializable
 
 	private BigDecimal reservePrice;
 
-	@OneToMany(mappedBy = "auction", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "auction", fetch = FetchType.EAGER)
 	private List<Bid> bids;
 
 	//status types for auction

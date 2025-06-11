@@ -43,9 +43,7 @@ public class AuctionService
 	{
 		Auction auction = getAuction(id);
 		if(auction==null)
-		{
 			return true;
-		}
 
 		auctionDao.delete(auction);
 		return true;

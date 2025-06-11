@@ -38,7 +38,7 @@ public class User implements Serializable
 	@Column(nullable = false)
 	protected Role role;
 
-	@ManyToMany(mappedBy = "bidders", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "bidder", fetch = FetchType.EAGER)
 	private Set<Bid> bids;
 
 	public enum Role

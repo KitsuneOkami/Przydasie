@@ -22,6 +22,7 @@
                     <h:outputText value="#{a.name}" styleClass="value"/>
                     <h:form>
                         <h:commandButton value="View Details" action="auction_details.xhtml">
+                            <f:param name="faces-redirect" value="true"/>
                             <f:param name="id" value="#{a.auctionId}"/>
                         </h:commandButton>
                     </h:form>

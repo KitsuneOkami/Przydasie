@@ -31,6 +31,9 @@ public class LoginBean
 	private String password;
 
 	@Inject
+	private UserSessionBean userSessionBean;
+
+	@Inject
 	private UserService userService;
 
 	@Inject
@@ -48,7 +51,8 @@ public class LoginBean
 
 		if(user.isPresent())
 		{
-			request.getSession().setAttribute("username", username);
+			//Store the user and username in the session bean
+			userSessionBean.setUser(user.get());
 			return "/auctions.xhtml?faces-redirect=true";
 		}
 		else
@@ -61,8 +65,8 @@ public class LoginBean
 
 	public String logout()
 	{
-		request.getSession().invalidate();
+		System.out.println("Logged out");
+		userSessionBean.logout(); // Clear the session bean
 		return "/login.xhtml?faces-redirect=true";
 	}
-
 }

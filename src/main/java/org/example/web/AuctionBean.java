@@ -1,6 +1,7 @@
 package org.example.web;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.ejb.Stateful;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -10,9 +11,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.example.model.Auction;
 import org.example.model.Auction.AuctionStatus;
+import org.example.model.Bid;
 import org.example.model.User;
 import org.example.service.AuctionService;
-import org.example.service.UserService;
 import org.example.util.JSFUtil;
 
 import java.io.IOException;
@@ -23,13 +24,14 @@ import java.util.Map;
 
 @Named
 @RequestScoped
+@Stateful
 public class AuctionBean
 {
 	@Inject
 	private AuctionService auctionService;
 
 	@Inject
-	private UserService userService;
+	private UserSessionBean userSession;
 
 	@Setter
 	@Getter
@@ -53,7 +55,11 @@ public class AuctionBean
 
 	@Setter
 	@Getter
-	private Auction auction = new Auction(); // For details.xhtml loading only
+	private BigDecimal bidAmount;
+
+	@Setter
+	@Getter
+	private Auction auction = new Auction();
 
 	public List<Auction> getAuctions()
 	{
@@ -79,8 +85,11 @@ public class AuctionBean
 		}
 	}
 
-	public void deleteAuction()
+	public void deleteAuction(Long auctionId)
 	{
+		System.out.println("Delete auction");
+		Auction auction = auctionService.getAuction(auctionId);
+
 		if(auction==null)
 		{
 			FacesContext.getCurrentInstance().addMessage(null,
@@ -88,16 +97,25 @@ public class AuctionBean
 			return;
 		}
 
-		User user = userService.findByName(FacesContext.getCurrentInstance()
-				.getExternalContext().getSessionMap().get("username").toString());
+		if(!userSession.isLoggedIn())
+		{
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "You must be logged in to delete an auction.", null));
+			return;
+		}
+
+		User user = userSession.getUser();
 		if(auction.getOwner().equals(user))
 		{
 			auctionService.deleteAuction(auction.getAuctionId());
+			System.out.println("Deleting auction 2: "+auction);
 			FacesContext.getCurrentInstance().addMessage(null,
 					new FacesMessage(FacesMessage.SEVERITY_INFO, "Auction deleted successfully.", null));
+			this.auction = null;
 			// Redirect to auctions list
 			try
 			{
+				System.out.println("Deleting auction 3");
 				FacesContext.getCurrentInstance().getExternalContext().redirect("auctions.xhtml");
 			} catch(Exception e)
 			{
@@ -112,18 +130,24 @@ public class AuctionBean
 		}
 	}
 
-	public boolean isAuctionOwner()
+	public boolean isAuctionOwner(Long auctionId)
 	{
-		String currentUsername = FacesContext.getCurrentInstance()
-				.getExternalContext().getSessionMap().get("username").toString();
-		return auction.getOwner().getName().equals(currentUsername);
+		Auction auction = auctionService.getAuction(auctionId);
+		return auction!=null&&auction.getOwner().equals(userSession.getUser());
 	}
 
 	public void save()
 	{
-		String currentUsername = FacesContext.getCurrentInstance()
-				.getExternalContext().getSessionMap().get("username").toString();
+		//Auction must have an owner owner
+		User user = userSession.getUser();
+		if(user==null)
+		{
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "You must be logged in to create an auction.", null));
+			return;
+		}
 
+		//Save the auction
 		Auction newAuction = new Auction();
 		newAuction.setName(name);
 		newAuction.setDescription(description);
@@ -131,18 +155,16 @@ public class AuctionBean
 		newAuction.setEndTime(endTime);
 		newAuction.setStartPrice(startPrice);
 		newAuction.setStatus(AuctionStatus.ACTIVE);
-
-		//Set the owner of the auction
-		newAuction.setOwner(userService.findByName(currentUsername));
-
-		//Save the auction
+		newAuction.setOwner(user);
 		auctionService.saveAuction(newAuction);
 
-		// Optionally clear form fields after saving
+		//Clear form fields after saving
 		name = "";
 		description = "";
 		startTime = null;
 		endTime = null;
+		startPrice = null;
+		bidAmount = null;
 
 		try
 		{
@@ -151,5 +173,64 @@ public class AuctionBean
 		{
 
 		}
+	}
+
+	public void placeBid(Long auctionId)
+	{
+		// Reload the auction using the auction ID
+		this.auction = auctionService.getAuction(auctionId);
+
+		// Check if the auction exists
+		if(auction==null)
+		{
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Auction not found.", null));
+			return;
+		}
+
+		// An auction must be active
+		if(auction.getStatus()!=AuctionStatus.ACTIVE)
+		{
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Auction is not active.", null));
+			return;
+		}
+
+		// Bid amount must be greater than zero
+		if(bidAmount==null||bidAmount.compareTo(BigDecimal.ZERO) <= 0)
+		{
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid bid amount.", null));
+			return;
+		}
+
+		// Bid must have an owner
+		User user = userSession.getUser();
+		if(user==null)
+		{
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "User not found.", null));
+			return;
+		}
+
+		// Create and save the bid
+		Bid newBid = new Bid();
+		newBid.setBidAmount(bidAmount);
+		newBid.setBidder(user);
+		newBid.setAuction(auction);
+
+		auction.getBids().add(newBid);
+		auctionService.saveAuction(auction);
+
+		FacesContext.getCurrentInstance().addMessage(null,
+				new FacesMessage(FacesMessage.SEVERITY_INFO, "Bid placed successfully.", null));
+	}
+
+	public Boolean canPlaceBid(Long auctionId)
+	{
+		Auction auction = auctionService.getAuction(auctionId);
+		return userSession.isLoggedIn()&&auction!=null
+				&&!userSession.getUser().equals(auction.getOwner())
+				&&auction.getStatus()==AuctionStatus.ACTIVE;
 	}
 }

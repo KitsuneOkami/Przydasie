@@ -20,14 +20,8 @@ public class Bid implements Serializable {
     @JoinColumn(name = "auction_id", nullable = false)
     private Auction auction;
 
-
-    @ManyToMany
-    @JoinTable(
-            name = "bid_user",
-            joinColumns = @JoinColumn(name = "bid_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private Set<User> bidders;
+    @ManyToOne
+    private User bidder;
 
     private BigDecimal bidAmount;
 }

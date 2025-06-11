@@ -33,9 +33,7 @@ public abstract class AbstractDaoImpl<T, K> implements AbstractDao<T, K>
 	public void delete(T entity)
 	{
 		if(entityManager.contains(entity))
-		{
 			entityManager.remove(entity);
-		}
 		else
 		{
 			T managedEntity = entityManager.merge(entity);

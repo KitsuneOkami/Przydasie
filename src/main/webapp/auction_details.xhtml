@@ -2,11 +2,11 @@
 <ui:composition template="template_contentpage.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <ui:define name="pageTitle">PrzydaSie - Szczegóły Aukcji</ui:define>
 
     <!-- Message box -->
-    <!-- Global feedback (e.g. "Invalid credentials") -->
     <h:messages globalOnly="false" layout="table" styleClass="alert alert-danger"/>
 
     <ui:define name="content">
@@ -22,8 +22,34 @@
             <h:outputText value="#{auctionBean.auction.endTime}"/>
         </h:panelGrid>
 
-        <h:panelGroup rendered="#{auctionBean.isAuctionOwner()}">
-            <h:commandButton value="Usuń Aukcję" action="#{auctionBean.deleteAuction}" class="btn btn-danger"/>
+        <!-- Auction Owner Actions -->
+        <h:panelGroup rendered="#{auctionBean.isAuctionOwner(auctionBean.auction.auctionId)}">
+            <h:commandButton value="Usuń Aukcję" action="#{auctionBean.deleteAuction(auctionBean.auction.auctionId)}"
+                             class="btn btn-danger"/>
         </h:panelGroup>
+
+        <!-- Bidding Form -->
+        <h:panelGroup rendered="#{auctionBean.canPlaceBid(auctionBean.auction.auctionId)}">
+            <h:form>
+                <h:outputLabel for="bidAmount" value="Kwota:"/>
+                <h:inputText id="bidAmount" value="#{auctionBean.bidAmount}" required="true"
+                             requiredMessage="Kwota jest wymagana"/>
+                <h:commandButton value="Złóż ofertę" action="#{auctionBean.placeBid(auctionBean.auction.auctionId)}"
+                                 class="btn btn-primary"/>
+            </h:form>
+        </h:panelGroup>
+
+        <!-- List of Bids -->
+        <h2>Oferty:</h2>
+        <h:dataTable value="#{auctionBean.auction.bids}" var="bid" styleClass="table table-striped">
+            <h:column>
+                <f:facet name="header">Użytkownicy</f:facet>
+                <h:outputText value="#{bid.bidders.stream().map(b -> b.name).collect(Collectors.joining(', '))}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Kwota</f:facet>
+                <h:outputText value="#{bid.bidAmount}"/>
+            </h:column>
+        </h:dataTable>
     </ui:define>
 </ui:composition>
