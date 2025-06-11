@@ -5,26 +5,35 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <ui:define name="pageTitle">PrzydaSie – Login</ui:define>
     <ui:define name="content">
-        <h:form>
-            <h1 class="mb-4">Logowanie</h1>
-
-            <!-- Message box -->
-            <!-- Global feedback (e.g. "Invalid credentials") -->
-            <h:messages globalOnly="false" layout="table" styleClass="alert alert-danger"/>
-
-            <div class="mb-3">
-                <label for="username" class="form-label">Nazwa Użytkownika</label>
-                <h:inputText id="username" value="#{loginBean.username}" class="form-control" required="true"/>
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="text-center">Logowanie</h2>
+                        </div>
+                        <div class="card-body">
+                            <h:form>
+                                <h:messages globalOnly="false" layout="table" styleClass="alert alert-danger w-100"/>
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Nazwa Użytkownika</label>
+                                    <h:inputText id="username" value="#{loginBean.username}" styleClass="form-control" required="true" requiredMessage="Nazwa użytkownika jest wymagana."/>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Hasło</label>
+                                    <h:inputSecret id="password" value="#{loginBean.password}" styleClass="form-control" required="true" requiredMessage="Hasło jest wymagane."/>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <h:commandButton value="Zaloguj Się" action="#{loginBean.login}" styleClass="btn btn-primary"/>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <h:link value="Chcesz się zarejestrować?" outcome="register.xhtml?faces-redirect=true" styleClass="btn btn-link"/>
+                                </div>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label">Hasło</label>
-                <h:inputSecret id="password" value="#{loginBean.password}" class="form-control" required="true"/>
-            </div>
-
-            <h:commandButton value="Zaloguj Się" action="#{loginBean.login}" class="btn btn-primary"/>
-            <h:link value="Chcesz się zarejestrować?" outcome="register.xhtml?faces-redirect=true"
-                    styleClass="btn btn-link"/>
-        </h:form>
+        </div>
     </ui:define>
 </ui:composition>

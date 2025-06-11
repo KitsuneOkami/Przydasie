@@ -5,85 +5,70 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <ui:define name="pageTitle">PrzydaSie - Nowa Aukcja</ui:define>
+
     <ui:define name="content">
-        <div class="container mt-4">
-            <h1 class="mb-4">Nowa Aukcja</h1>
+        <div class="container mt-4 mb-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h1 class="h4 mb-0">Tworzenie Nowej Aukcji</h1>
+                        </div>
+                        <div class="card-body">
+                            <h:form>
+                                <h:messages globalOnly="true" layout="table" styleClass="alert alert-danger w-100" />
 
-            <!-- Message box -->
-            <!-- Global feedback (e.g. "Invalid credentials") -->
-            <h:messages globalOnly="false" layout="table" styleClass="alert alert-danger"/>
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Nazwa Aukcji</label>
+                                    <h:inputText id="name" value="#{auctionCreateBean.name}" styleClass="form-control" required="true" requiredMessage="Nazwa aukcji jest wymagana."/>
+                                    <h:message for="name" styleClass="text-danger small"/>
+                                </div>
 
-            <h:form>
-                <!-- Starting Price -->
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="startPrice" class="form-label">Cena Początkowa:</label>
-                    </div>
-                    <div class="col-md-8">
-                        <h:inputText id="startPrice" value="#{auctionCreateBean.startPrice}" class="form-control"
-                                     required="true">
-                            <f:convertNumber pattern="#,##0.00"/>
-                        </h:inputText>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Opis</label>
+                                    <h:inputTextarea id="description" value="#{auctionCreateBean.description}" styleClass="form-control" rows="5" required="true" requiredMessage="Opis jest wymagany."/>
+                                    <h:message for="description" styleClass="text-danger small"/>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="startPrice" class="form-label">Cena Początkowa</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">PLN</span>
+                                        <h:inputText id="startPrice" value="#{auctionCreateBean.startPrice}" styleClass="form-control" required="true" requiredMessage="Cena początkowa jest wymagana.">
+                                            <f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
+                                        </h:inputText>
+                                    </div>
+                                    <h:message for="startPrice" styleClass="text-danger small"/>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label for="startDate" class="form-label">Data Rozpoczęcia</label>
+                                        <h:inputText id="startDate" value="#{auctionCreateBean.startTime}" type="datetime-local" styleClass="form-control" label="Data Rozpoczęcia" required="true" requiredMessage="Data rozpoczęcia jest wymagana.">
+                                            <f:convertDateTime type="localDateTime" pattern="yyyy-MM-dd'T'HH:mm"/>
+                                            <f:validator validatorId="futureDateValidator"/>
+                                        </h:inputText>
+                                        <h:message for="startDate" styleClass="text-danger small"/>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="endDate" class="form-label">Data Zakończenia</label>
+                                        <h:inputText id="endDate" value="#{auctionCreateBean.endTime}" type="datetime-local" styleClass="form-control" label="Data Zakończenia" required="true" requiredMessage="Data zakończenia jest wymagana.">
+                                            <f:convertDateTime type="localDateTime" pattern="yyyy-MM-dd'T'HH:mm"/>
+                                            <f:validator validatorId="futureDateValidator"/>
+                                        </h:inputText>
+                                        <h:message for="endDate" styleClass="text-danger small"/>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid">
+                                    <h:commandButton value="Utwórz Aukcję" action="#{auctionCreateBean.save}" styleClass="btn btn-primary btn-lg"/>
+                                </div>
+                            </h:form>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Name -->
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="name" class="form-label">Nazwa:</label>
-                    </div>
-                    <div class="col-md-8">
-                        <h:inputText id="name" value="#{auctionCreateBean.name}" class="form-control" required="true"/>
-                    </div>
-                </div>
-
-                <!-- Description -->
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="description" class="form-label">Opis:</label>
-                    </div>
-                    <div class="col-md-8">
-                        <h:inputTextarea id="description" value="#{auctionCreateBean.description}" class="form-control"/>
-                    </div>
-                </div>
-
-                <!-- Start Date -->
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="startDate" class="form-label">Data Rozpoczęcia:</label>
-                    </div>
-                    <div class="col-md-8">
-                        <h:inputText id="startDate" value="#{auctionCreateBean.startTime}" type="datetime-local"
-                                     label="Data Rozpoczęcia">
-                            <f:convertDateTime pattern="yyyy-MM-dd'T'HH:mm" type="localDateTime"/>
-                            <f:validator validatorId="futureDateValidator"/>
-                        </h:inputText>
-
-                    </div>
-                </div>
-
-                <!-- End Date -->
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label for="endDate" class="form-label">Data Zakończenia:</label>
-                    </div>
-                    <div class="col-md-8">
-
-                        <h:inputText id="endDate" value="#{auctionCreateBean.endTime}" type="datetime-local"
-                                     label="Data Zakończenia">
-                            <f:convertDateTime pattern="yyyy-MM-dd'T'HH:mm" type="localDateTime"/>
-                            <f:validator validatorId="futureDateValidator"/>
-                        </h:inputText>
-                    </div>
-                </div>
-
-                <!-- Save auction -->
-                <div class="row">
-                    <div class="col-md-12 text-end">
-                        <h:commandButton value="Zapisz Aukcję" action="#{auctionCreateBean.save}" class="btn btn-primary"/>
-                    </div>
-                </div>
-            </h:form>
+            </div>
         </div>
     </ui:define>
 </ui:composition>

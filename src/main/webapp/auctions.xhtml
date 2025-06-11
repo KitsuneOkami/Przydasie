@@ -3,31 +3,61 @@
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
->
-    <ui:define name="pageTitle">PrzydaSie – Aukcje</ui:define>
-    <ui:define name="content">
-        <h1>Auction List</h1>
-        <h:panelGrid columns="1" styleClass="auction-list">
-            <h:outputText value="No auctions available" rendered="#{auctionListBean.auctions.isEmpty()}"
-                          style="color: red; font-weight: bold;"/>
-            <h:form>
-                <h:commandButton value="Add New Auction" action="auction_new.xhtml?faces-redirect=true"
-                                 style="margin-bottom: 20px;"/>
-            </h:form>
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-            <ui:repeat value="#{auctionListBean.auctions}" var="a">
-                <h:panelGrid columns="2" styleClass="auction-item"
-                             style="margin-bottom: 20px; border: 1px solid #ccc; padding: 10px;">
-                    <h:outputText value="Name:" styleClass="label"/>
-                    <h:outputText value="#{a.name}" styleClass="value"/>
-                    <h:form>
-                        <h:link value="View Details" outcome="auction_details.xhtml">
-                            <f:param name="id" value="#{a.auctionId}" />
-                        </h:link>
-                    </h:form>
-                </h:panelGrid>
-            </ui:repeat>
-        </h:panelGrid>
+    <ui:define name="pageTitle">PrzydaSie – Aukcje</ui:define>
+
+    <ui:define name="content">
+        <div class="container mt-4 mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2">Dostępne Aukcje</h1>
+                <h:form>
+                    <h:commandButton value="Dodaj Nową Aukcję" action="auction_new.xhtml?faces-redirect=true"
+                                     styleClass="btn btn-primary shadow-sm"/>
+                </h:form>
+            </div>
+
+            <h:panelGroup rendered="#{auctionListBean.auctions.isEmpty()}">
+                <div class="alert alert-info text-center" role="alert">
+                    Aktualnie brak dostępnych aukcji. Dodaj nową, aby rozpocząć!
+                </div>
+            </h:panelGroup>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                <ui:repeat value="#{auctionListBean.auctions}" var="a">
+                    <div class="col">
+                        <div class="card h-100 shadow-sm hover-shadow-lg">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">#{a.name}</h5>
+                                <p class="card-text text-muted small flex-grow-1">#{a.description}</p>
+                                <p class="card-text">
+                                    <strong>Status:</strong> <span class="badge #{a.status == 'ACTIVE' ? 'bg-success' : 'bg-secondary'}">#{a.status}</span>
+                                </p>
+                                <p class="card-text">
+                                    <strong>Zakończenie:</strong>
+                                    <h:outputText value="#{a.endTime}">
+                                        <f:convertDateTime type="localDateTime" pattern="dd.MM.yyyy, HH:mm" />
+                                    </h:outputText>
+                                </p>
+                                <p class="card-text fw-bold fs-5 text-primary">
+                                    Cena: <h:outputText value="#{a.startPrice}">
+                                    <f:convertNumber type="currency" currencySymbol="PLN" />
+                                </h:outputText>
+                                </p>
+                                <h:link value="Zobacz Szczegóły" outcome="auction_details.xhtml" styleClass="btn btn-outline-primary mt-auto stretched-link">
+                                    <f:param name="id" value="#{a.auctionId}" />
+                                </h:link>
+                            </div>
+                        </div>
+                    </div>
+                </ui:repeat>
+            </div>
+        </div>
+        <h:outputStylesheet>
+            .hover-shadow-lg:hover {
+                transition: box-shadow .3s;
+                box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+            }
+        </h:outputStylesheet>
     </ui:define>
 </ui:composition>

@@ -4,64 +4,97 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
-    <ui:define name="pageTitle">PrzydaSie - Szczegóły Aukcji</ui:define>
+
     <f:metadata>
         <f:viewParam name="id" value="#{auctionDetailsBean.id}"/>
         <f:event type="preRenderView" listener="#{auctionDetailsBean.init}"/>
     </f:metadata>
 
-    <!-- Message box -->
-    <h:messages globalOnly="false" layout="table" styleClass="alert alert-danger"/>
+    <ui:define name="pageTitle">PrzydaSie - Szczegóły Aukcji</ui:define>
 
     <ui:define name="content">
-        <h1>Szczegóły Aukcji: #{auctionDetailsBean.auction.name}</h1>
-        <h:panelGrid columns="2" style="border: 1px solid #ccc; padding: 10px;">
-            <h:outputText value="Opis:"/>
-            <h:outputText value="#{auctionDetailsBean.auction.description}"/>
-            <h:outputText value="Status:"/>
-            <h:outputText value="#{auctionDetailsBean.auction.status}"/>
-            <h:outputText value="Data Rozpoczęcia:"/>
-            <h:outputText value="#{auctionDetailsBean.auction.startTime}"/>
-            <h:outputText value="Data Zakończenia:"/>
-            <h:outputText value="#{auctionDetailsBean.auction.endTime}"/>
-        </h:panelGrid>
+        <div class="container mt-4">
+            <h:messages globalOnly="true" layout="table" styleClass="alert alert-info w-100" errorClass="alert alert-danger w-100"/>
 
-        <!-- Auction Owner Actions -->
-        <h:panelGroup rendered="#{auctionDetailsBean.isAuctionOwner()}">
-            <h:form>
-                <h:commandButton value="Usuń Aukcję" action="#{auctionDetailsBean.deleteAuction}"
-                                 class="btn btn-danger"/>
-            </h:form>
-        </h:panelGroup>
+            <h:panelGroup rendered="#{auctionDetailsBean.auction != null}">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h2 class="h4 mb-0">#{auctionDetailsBean.auction.name}</h2>
+                        <h:form rendered="#{auctionDetailsBean.isAuctionOwner()}">
+                            <h:commandButton value="Usuń Aukcję" action="#{auctionDetailsBean.deleteAuction}"
+                                             styleClass="btn btn-danger btn-sm"/>
+                        </h:form>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text"><strong>Opis:</strong> #{auctionDetailsBean.auction.description}</p>
+                        <p><strong>Status:</strong> <span class="badge #{auctionDetailsBean.auction.status == 'ACTIVE' ? 'bg-success' : 'bg-secondary'}">#{auctionDetailsBean.auction.status}</span></p>
+                        <p><strong>Data Rozpoczęcia:</strong>
+                            <h:outputText value="#{auctionDetailsBean.auction.startTime}">
+                                <f:convertDateTime type="localDateTime" pattern="dd MMMM yyyy, HH:mm" locale="pl_PL"/>
+                            </h:outputText>
+                        </p>
+                        <p><strong>Data Zakończenia:</strong>
+                            <h:outputText value="#{auctionDetailsBean.auction.endTime}">
+                                <f:convertDateTime type="localDateTime" pattern="dd MMMM yyyy, HH:mm" locale="pl_PL"/>
+                            </h:outputText>
+                        </p>
+                        <p><strong>Cena wywoławcza:</strong>
+                            <h:outputText value="#{auctionDetailsBean.auction.startPrice}">
+                                <f:convertNumber type="currency" currencySymbol="PLN" />
+                            </h:outputText>
+                        </p>
+                    </div>
+                </div>
 
-        <!-- Bidding Form -->
-        <h:panelGroup rendered="#{auctionDetailsBean.canPlaceBid()}">
-            <h:form>
-                <h:outputLabel for="bidAmount" value="Kwota:"/>
-                <h:inputText id="bidAmount" value="#{auctionDetailsBean.bidAmount}" required="true"
-                             requiredMessage="Kwota jest wymagana"/>
-                <h:commandButton value="Złóż ofertę" action="#{auctionDetailsBean.placeBid}"
-                                 class="btn btn-primary"/>
-            </h:form>
-        </h:panelGroup>
+                <h:panelGroup rendered="#{auctionDetailsBean.canPlaceBid()}" styleClass="mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4 class="card-title">Złóż ofertę</h4>
+                            <h:form>
+                                <div class="input-group">
+                                    <span class="input-group-text">PLN</span>
+                                    <h:inputText id="bidAmount" value="#{auctionDetailsBean.bidAmount}" styleClass="form-control" required="true" requiredMessage="Kwota jest wymagana">
+                                        <f:convertNumber type="number" groupingUsed="false" />
+                                    </h:inputText>
+                                    <h:commandButton value="Licytuj" action="#{auctionDetailsBean.placeBid}" styleClass="btn btn-primary"/>
+                                </div>
+                                <h:message for="bidAmount" styleClass="text-danger small mt-1"/>
+                            </h:form>
+                        </div>
+                    </div>
+                </h:panelGroup>
 
-        <!-- List of Bids -->
-        <h2>Oferty:</h2>
-        <h:panelGroup rendered="#{not empty auctionDetailsBean.auction.bids}">
-            <h3>Bidders</h3>
-            <ul>
-                <ui:repeat value="#{auctionDetailsBean.auction.bids}" var="bid">
-                    <li>
-                        <h:outputText value="#{bid.bidder.name}"/>
-                        <span> - </span>
-                        <h:outputText value="#{bid.bidAmount}"/>
-                    </li>
-                </ui:repeat>
-            </ul>
-        </h:panelGroup>
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h3 class="h5 mb-0">Oferty</h3>
+                    </div>
+                    <div class="card-body">
+                        <h:panelGroup rendered="#{not empty auctionDetailsBean.auction.bids}">
+                            <ul class="list-group list-group-flush">
+                                <ui:repeat value="#{auctionDetailsBean.auction.bids}" var="bid">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span><h:outputText value="#{bid.bidder.name}"/></span>
+                                        <span class="fw-bold">
+                                             <h:outputText value="#{bid.bidAmount}">
+                                                 <f:convertNumber type="currency" currencySymbol="PLN" />
+                                             </h:outputText>
+                                        </span>
+                                    </li>
+                                </ui:repeat>
+                            </ul>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{empty auctionDetailsBean.auction.bids}">
+                            <p class="text-muted fst-italic">Brak ofert. Bądź pierwszy!</p>
+                        </h:panelGroup>
+                    </div>
+                </div>
+            </h:panelGroup>
 
-        <h:panelGroup rendered="#{empty auction.bids}">
-            <em>No bids yet. Be the first to strike!</em>
-        </h:panelGroup>
+            <h:panelGroup rendered="#{auctionDetailsBean.auction == null}">
+                <div class="alert alert-warning text-center" role="alert">
+                    Aukcja o podanym ID nie została znaleziona.
+                </div>
+            </h:panelGroup>
+        </div>
     </ui:define>
 </ui:composition>
