@@ -32,6 +32,12 @@ public class UserService
 		return Optional.empty();
 	}
 
+	public User findByName(String username)
+	{
+		Optional<User> found = userDao.findByName(username);
+		return found.orElse(null);
+	}
+
 	public boolean usernameOrEmailTaken(String username, String email)
 	{
 		Optional<User> found = userDao.findByName(username);
