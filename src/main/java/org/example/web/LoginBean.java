@@ -1,5 +1,6 @@
 package org.example.web;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -10,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.example.model.User;
 import org.example.service.UserService;
+import org.example.util.JSFUtil;
 
 import java.util.Optional;
 
@@ -33,6 +35,12 @@ public class LoginBean
 
 	@Inject
 	private HttpServletRequest request;
+
+	@PostConstruct
+	public void init()
+	{
+		JSFUtil.redirectIfLogged(true, "auctions.xhtml");
+	}
 
 	public String login()
 	{

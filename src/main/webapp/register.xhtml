@@ -2,37 +2,50 @@
 <ui:composition template="template.xhtml"
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <ui:define name="pageTitle">PrzydaSie – Rejestracja</ui:define>
     <ui:define name="content">
         <h:form>
-            <h1 class="mb-4">Register</h1>
+            <h1 class="mb-4">Rejestracja</h1>
 
-            <ui:repeat value="#{facesContext.messageList}" var="msg">
-                <div class="alert alert-#{msg.severity == 'INFO' ? 'success' : 'danger'}" role="alert">
-                    #{msg.summary}
-                </div>
-            </ui:repeat>
+            <h:messages globalOnly="false" layout="table" styleClass="alert alert-danger"/>
 
             <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <h:inputText id="username" value="#{registerBean.username}" required="true" styleClass="form-control"/>
+                <label for="username" class="form-label">Nazwa Użytkownika</label>
+                <h:inputText id="username" value="#{registerBean.username}" required="true"
+                             requiredMessage="Nazwa użytkownika jest wymagana."
+                             styleClass="form-control"/>
             </div>
             <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <h:inputText id="email" value="#{registerBean.email}" required="true" styleClass="form-control"/>
+                <label for="email" class="form-label">E-Mail</label>
+                <h:inputText id="email" value="#{registerBean.email}" required="true"
+                             requiredMessage="Adres e-mail jest wymagany."
+                             validatorMessage="Nieprawidłowy adres e-mail."
+                             styleClass="form-control">
+                    <f:validateRegex
+                            pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+                            validatorMessage="Podaj poprawny adres e-mail."/>
+                </h:inputText>
             </div>
             <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
+                <label for="password" class="form-label">Hasło</label>
                 <h:inputSecret id="password" value="#{registerBean.password}" required="true"
-                               styleClass="form-control"/>
+                               requiredMessage="Hasło jest wymagane."
+                               validatorMessage="Hasło musi mieć od 4 do 32 znaków."
+                               styleClass="form-control">
+                    <f:validateLength minimum="4" maximum="32"/>
+                </h:inputSecret>
             </div>
             <div class="mb-3">
-                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <label for="confirmPassword" class="form-label">Powtórz Hasło</label>
                 <h:inputSecret id="confirmPassword" value="#{registerBean.confirmPassword}" required="true"
-                               styleClass="form-control"/>
+                               requiredMessage="Potwierdzenie hasła jest wymagane."
+                               styleClass="form-control">
+                </h:inputSecret>
             </div>
-            <h:commandButton value="Register" action="#{registerBean.register}" styleClass="btn btn-primary"/>
-            <h:link value="Back to Login" outcome="login.xhtml?faces-redirect=true" styleClass="btn btn-link"/>
+            <h:commandButton value="Zarejestruj Się" action="#{registerBean.register}" styleClass="btn btn-primary"/>
+            <h:link value="Powrót do logowania" outcome="login.xhtml?faces-redirect=true" styleClass="btn btn-link"/>
         </h:form>
     </ui:define>
 </ui:composition>

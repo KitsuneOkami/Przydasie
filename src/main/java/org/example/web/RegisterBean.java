@@ -1,5 +1,6 @@
 package org.example.web;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -12,7 +13,10 @@ import lombok.Setter;
 import org.example.model.User;
 import org.example.model.User.Role;
 import org.example.service.UserService;
+import org.example.util.JSFUtil;
 import org.example.util.PasswordUtil;
+
+import java.io.IOException;
 
 @Named
 @RequestScoped
@@ -38,30 +42,33 @@ public class RegisterBean
 	private
 	IdentityStoreHandler identityStoreHandler;
 
+	@PostConstruct
+	public void init()
+	{
+		JSFUtil.redirectIfLogged(true, "auctions.xhtml");
+	}
+
 	@Transactional
 	public String register()
 	{
 		//Passwords must match
 		if(!password.equals(confirmPassword))
 		{
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Passwords do not match", null));
+			JSFUtil.addErrorMessage("Hasła są różne");
 			return null;
 		}
 
 		//There can be no null or empty values
 		if(username==null||username.isEmpty()||email==null||email.isEmpty()||password.isEmpty())
 		{
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Username, email, and password must not be empty", null));
+			JSFUtil.addErrorMessage("Wszystkie pola są wymagane");
 			return null;
 		}
 
 		//Two users must not share a username or email
 		if(userService.usernameOrEmailTaken(username, email))
 		{
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_WARN, "Username or email already exists", null));
+			JSFUtil.addErrorMessage("Użytkownik bądź email już istnieje");
 			return null;
 		}
 
@@ -73,8 +80,7 @@ public class RegisterBean
 		user.setRole(Role.USER);
 		userService.saveUser(user);
 
-		FacesContext.getCurrentInstance().addMessage(null,
-				new FacesMessage(FacesMessage.SEVERITY_INFO, "Registration successful!", null));
+		JSFUtil.addInfoMessage("Pomyślnie zarejestrowano użytkownika");
 
 		//Redirect, so the user can log in
 		return "/login.xhtml?faces-redirect=true";

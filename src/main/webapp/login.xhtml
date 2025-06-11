@@ -3,26 +3,28 @@
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <ui:define name="pageTitle">PrzydaSie – Login</ui:define>
     <ui:define name="content">
         <h:form>
-            <h1 class="mb-4">Login</h1>
+            <h1 class="mb-4">Logowanie</h1>
 
             <!-- Message box -->
-            <h:messages globalOnly="true" layout="table"
-                        styleClass="alert #{facesContext.maximumSeverity.ordinal eq 2 ? 'alert-success' : 'alert-danger'}"/>
+            <!-- Global feedback (e.g. "Invalid credentials") -->
+            <h:messages globalOnly="false" layout="table" styleClass="alert alert-danger"/>
 
             <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
+                <label for="username" class="form-label">Nazwa Użytkownika</label>
                 <h:inputText id="username" value="#{loginBean.username}" class="form-control" required="true"/>
             </div>
 
             <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
+                <label for="password" class="form-label">Hasło</label>
                 <h:inputSecret id="password" value="#{loginBean.password}" class="form-control" required="true"/>
             </div>
 
-            <h:commandButton value="Login" action="#{loginBean.login}" class="btn btn-primary"/>
-            <h:link value="Want to register?" outcome="register.xhtml?faces-redirect=true" styleClass="btn btn-link"/>
+            <h:commandButton value="Zaloguj Się" action="#{loginBean.login}" class="btn btn-primary"/>
+            <h:link value="Chcesz się zarejestrować?" outcome="register.xhtml?faces-redirect=true"
+                    styleClass="btn btn-link"/>
         </h:form>
     </ui:define>
 </ui:composition>

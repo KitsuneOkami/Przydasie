@@ -42,5 +42,23 @@ public class JSFUtil
     }
 
 
+    public static void redirectIfLogged(boolean logged, String view)
+    {
+        Object loggedInUser = FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getSessionMap()
+                .get("username");
+
+        if(loggedInUser == null ^ logged)
+        {
+            try
+            {
+                redirect(view);
+            } catch(IOException e)
+            {
+                // Log it if needed
+            }
+        }
+    }
 }
 
