@@ -20,6 +20,9 @@ public class AdminService
 
 	public void saveAdmin(Admin admin)
 	{
+		if (admin == null) {
+			throw new IllegalArgumentException("Admin cannot be null");
+		}
 		adminDao.save(admin);
 	}
 

@@ -11,25 +11,25 @@ public class PawnShopService
 	@Inject
 	private PawnShopDao pawnShopDao;
 
-	public void savePremiumUser(PawnShop premiumUser)
+	public void savePawnShop(PawnShop pawnShop)
 	{
-		pawnShopDao.save(premiumUser);
+		pawnShopDao.save(pawnShop);
 	}
 
-	public PawnShop getPremiumUser(Long id)
+	public PawnShop getPawnShop(Long id)
 	{
 		return pawnShopDao.find(id);
 	}
 
-	public boolean deletePremiumUser(Long id)
+	public boolean deletePawnShop(Long id)
 	{
-		PawnShop premiumUser = getPremiumUser(id);
-		if(premiumUser==null)
+		PawnShop pawnShop = getPawnShop(id);
+		if(pawnShop==null)
 		{
 			return true;
 		}
 
-		pawnShopDao.delete(premiumUser);
+		pawnShopDao.delete(pawnShop);
 		return true;
 	}
 }

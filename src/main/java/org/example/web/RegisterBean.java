@@ -2,8 +2,6 @@ package org.example.web;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.security.enterprise.identitystore.IdentityStoreHandler;
@@ -15,8 +13,6 @@ import org.example.model.User.Role;
 import org.example.service.UserService;
 import org.example.util.JSFUtil;
 import org.example.util.PasswordUtil;
-
-import java.io.IOException;
 
 @Named
 @RequestScoped
