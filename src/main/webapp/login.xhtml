@@ -5,7 +5,7 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <ui:define name="content">
         <h:form>
-            <h2 class="mb-4">Login</h2>
+            <h1 class="mb-4">Login</h1>
 
             <!-- Message box -->
             <h:messages globalOnly="true" layout="table"
@@ -13,16 +13,16 @@
 
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
-                <h:inputText id="username" value="#{credentialsBean.username}" class="form-control" required="true"/>
+                <h:inputText id="username" value="#{loginBean.username}" class="form-control" required="true"/>
             </div>
 
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <h:inputSecret id="password" value="#{credentialsBean.password}" class="form-control" required="true"/>
+                <h:inputSecret id="password" value="#{loginBean.password}" class="form-control" required="true"/>
             </div>
 
-            <h:commandButton value="Login" action="#{credentialsBean.login}" class="btn btn-primary"/>
+            <h:commandButton value="Login" action="#{loginBean.login}" class="btn btn-primary"/>
+            <h:link value="Want to register?" outcome="register.xhtml?faces-redirect=true" styleClass="btn btn-link"/>
         </h:form>
-
     </ui:define>
 </ui:composition>

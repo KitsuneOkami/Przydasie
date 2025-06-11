@@ -8,20 +8,6 @@
         <welcome-file>login.xhtml</welcome-file>
     </welcome-file-list>
 
-    <security-constraint>
-        <web-resource-collection>
-            <web-resource-name>Protected Pages</web-resource-name>
-            <url-pattern>/*</url-pattern>
-            <url-pattern>!/login.xhtml</url-pattern>
-            <url-pattern>!/register.xhtml</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <role-name>USER</role-name>
-            <role-name>ADMIN</role-name>
-            <role-name>PAWN_SHOP</role-name>
-        </auth-constraint>
-    </security-constraint>
-
     <context-param>
         <param-name>jakarta.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
@@ -31,10 +17,6 @@
         <param-name>javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL</param-name>
         <param-value>true</param-value>
     </context-param>
-
-    <listener>
-        <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
-    </listener>
 
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>

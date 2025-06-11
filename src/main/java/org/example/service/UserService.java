@@ -5,8 +5,8 @@ import jakarta.inject.Inject;
 import jakarta.persistence.NoResultException;
 import org.example.dao.UserDao;
 import org.example.model.User;
+import org.example.util.PasswordUtil;
 
-import java.util.List;
 import java.util.Optional;
 
 @Stateless
@@ -17,10 +17,12 @@ public class UserService
 
 	public Optional<User> authenticate(String username, String password)
 	{
+		System.out.println("Authenticating...");
 		try
 		{
 			Optional<User> found = userDao.findByName(username);
-			if(found.isPresent()&&found.get().getPassword().equals(password))
+			System.out.println("Found: "+found.isPresent());
+			if(found.isPresent()&&PasswordUtil.check(password, found.get().getPassword()))
 				return found;
 
 		} catch(NoResultException ignored)
@@ -30,9 +32,10 @@ public class UserService
 		return Optional.empty();
 	}
 
-	public List<User> findAllUsers()
+	public boolean usernameOrEmailTaken(String username, String email)
 	{
-		return userDao.findAll();
+		Optional<User> found = userDao.findByName(username);
+		return found.isPresent()&&found.get().getEmail().equals(email);
 	}
 
 	public void saveUser(User user)

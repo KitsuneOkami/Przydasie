@@ -1,0 +1,60 @@
+package org.example.web;
+
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
+import lombok.Setter;
+import org.example.model.User;
+import org.example.service.UserService;
+
+import java.util.Optional;
+
+/**
+ * @author Pabilo8
+ * @since 11.06.2025
+ */
+@Named
+@RequestScoped
+public class LoginBean
+{
+	@Setter
+	@Getter
+	private String username;
+	@Setter
+	@Getter
+	private String password;
+
+	@Inject
+	private UserService userService;
+
+	@Inject
+	private HttpServletRequest request;
+
+	public String login()
+	{
+		Optional<User> user = userService.authenticate(username, password);
+
+		if(user.isPresent())
+		{
+			request.getSession().setAttribute("username", username);
+			return "/auctions.xhtml?faces-redirect=true";
+		}
+		else
+		{
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Login failed", "Invalid credentials"));
+			return null;
+		}
+	}
+
+	public String logout()
+	{
+		request.getSession().invalidate();
+		return "/login.xhtml?faces-redirect=true";
+	}
+
+}

@@ -9,6 +9,8 @@
 </h:head>
 <h:body>
     <div class="container mt-3">
+        <h:outputText value="User: #{request.remoteUser}" />
+        <h:outputText value="Is USER? #{request.isUserInRole('USER')}" />
         <ui:insert name="content"/>
     </div>
 </h:body>
