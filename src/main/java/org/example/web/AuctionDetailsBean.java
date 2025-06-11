@@ -10,13 +10,18 @@ import lombok.Getter;
 import lombok.Setter;
 import org.example.model.Auction;
 import org.example.model.Auction.AuctionStatus;
+import org.example.model.Bid;
 import org.example.model.User;
 import org.example.service.AuctionService;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Named
 @ViewScoped
@@ -31,7 +36,6 @@ public class AuctionDetailsBean implements Serializable
 	@Getter
 	@Setter
 	private Long id;
-
 	@Getter
 	private Auction auction;
 
@@ -51,6 +55,19 @@ public class AuctionDetailsBean implements Serializable
 		{
 			logger.log(Level.WARNING, "Auction with ID {0} could not be found.", id);
 		}
+	}
+
+	/**
+	 * Returns the list of bids sorted by bid amount in descending order.
+	 * @return A sorted list of bids.
+	 */
+	public List<Bid> getSortedBids() {
+		if (auction == null || auction.getBids() == null) {
+			return new ArrayList<>();
+		}
+		return auction.getBids().stream()
+				.sorted(Comparator.comparing(Bid::getBidAmount).reversed())
+				.collect(Collectors.toList());
 	}
 
 	public void placeBid()
@@ -80,6 +97,20 @@ public class AuctionDetailsBean implements Serializable
 			return;
 		}
 
+		BigDecimal currentHighestPrice = getSortedBids().stream()
+				.map(Bid::getBidAmount)
+				.findFirst()
+				.orElse(auction.getStartPrice());
+
+		if (bidAmount.compareTo(currentHighestPrice) <= 0) {
+			String message = String.format("Twoja oferta musi być wyższa niż obecna cena (%.2f PLN).", currentHighestPrice);
+			logger.log(Level.WARNING, "Bid placement failed: Bid amount {0} is not higher than current price {1}.", new Object[]{bidAmount, currentHighestPrice});
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, message, null));
+			return;
+		}
+
+
 		User user = userSession.getUser();
 		if(user==null)
 		{
@@ -90,9 +121,12 @@ public class AuctionDetailsBean implements Serializable
 		}
 
 		auctionService.addBidToAuction(auction.getAuctionId(), user, bidAmount);
+		auction = auctionService.getAuctionWithBids(id);
+		bidAmount = null;
+
 		logger.log(Level.INFO, "Bid of {0} placed successfully on auction {1} by user {2}.", new Object[]{bidAmount, auction.getAuctionId(), user.getName()});
 		FacesContext.getCurrentInstance().addMessage(null,
-				new FacesMessage(FacesMessage.SEVERITY_INFO, "Bid placed successfully.", null));
+				new FacesMessage(FacesMessage.SEVERITY_INFO, "Oferta złożona pomyślnie!", null));
 	}
 
 	public void deleteAuction()
