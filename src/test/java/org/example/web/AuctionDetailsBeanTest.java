@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -47,6 +49,9 @@ class AuctionDetailsBeanTest {
 
     private User testUser;
     private Auction testAuction;
+    private Bid testBid0;
+    private Bid testBid10;
+    private Bid testBid50;
 
     private static MockedStatic<FacesContext> mockedFacesContext;
 
@@ -64,20 +69,31 @@ class AuctionDetailsBeanTest {
     void setUp() {
         mockedFacesContext.reset();
 
-        // Mark lenient so unused stubbings don't cause errors
-        lenient().when(FacesContext.getCurrentInstance()).thenReturn(facesContext);
-        lenient().when(facesContext.getExternalContext()).thenReturn(externalContext);
-
-        // Initialize test user and auction as before
+        // Initialize test user
         testUser = new User();
         testUser.setUserId(1L);
         testUser.setName("Test User");
 
+        // Initialize test auction before using it
         testAuction = new Auction();
         testAuction.setAuctionId(1L);
         testAuction.setStatus(AuctionStatus.ACTIVE);
         testAuction.setOwner(testUser);
-        testAuction.setBids(new ArrayList<>());
+
+        Set<Bid> bids = new HashSet<>();
+        testAuction.setBids(bids);
+
+        // Now stub userSession methods using testUser
+        lenient().when(userSession.getUsername()).thenReturn(testUser.getName());
+        lenient().when(userSession.getUser()).thenReturn(testUser);
+
+        // Stub FacesContext and ExternalContext
+        lenient().when(FacesContext.getCurrentInstance()).thenReturn(facesContext);
+        lenient().when(facesContext.getExternalContext()).thenReturn(externalContext);
+
+        // Stub auctionService
+        lenient().when(auctionService.getAuctionWithBids(anyLong())).thenReturn(testAuction);
+
     }
 
     @Test
@@ -97,7 +113,7 @@ class AuctionDetailsBeanTest {
     void init_WhenIdIsSet_ShouldLoadAuction() {
         // Arrange
         Long auctionId = 1L;
-        when(auctionService.getAuction(auctionId)).thenReturn(testAuction);
+        when(auctionService.getAuctionWithBids(auctionId)).thenReturn(testAuction);
         auctionDetailsBean.setId(auctionId);
 
         // Act
@@ -106,8 +122,39 @@ class AuctionDetailsBeanTest {
         // Assert
         Auction loadedAuction = auctionDetailsBean.getAuction();
         assertNotNull(loadedAuction, "Auction should not be null after init");
-        assertEquals(testAuction, loadedAuction, "Loaded auction should match the test auction");
-        verify(auctionService, times(1)).getAuction(auctionId);
+        assertEquals(testAuction, loadedAuction);
+        verify(auctionService).getAuctionWithBids(auctionId);
+    }
+
+    @Test
+    void getSortedBids_WhenAuctionIsNull_ShouldReturnEmptyList() throws Exception {
+        // Arrange
+        Field auctionField = AuctionDetailsBean.class.getDeclaredField("auction");
+        auctionField.setAccessible(true);
+        auctionField.set(auctionDetailsBean, null);
+
+        // Act
+        var bids = auctionDetailsBean.getSortedBids();
+
+        // Assert
+        assertNotNull(bids, "getSortedBids should not return null");
+        assertTrue(bids.isEmpty(), "getSortedBids should return empty list when auction is null");
+    }
+
+    @Test
+    void getSortedBids_WhenAuctionBidsIsNull_ShouldReturnEmptyList() {
+        // Arrange
+        testAuction.setBids(null);
+        auctionDetailsBean.setId(1L);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
+        auctionDetailsBean.init();
+
+        // Act
+        var bids = auctionDetailsBean.getSortedBids();
+
+        // Assert
+        assertNotNull(bids, "getSortedBids should not return null");
+        assertTrue(bids.isEmpty(), "getSortedBids should return empty list when auction bids is null");
     }
 
     @Test
@@ -123,7 +170,7 @@ class AuctionDetailsBeanTest {
     void placeBid_WhenAuctionNotActive_ShouldShowError() {
         testAuction.setStatus(AuctionStatus.ENDED);
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         auctionDetailsBean.init();
 
         auctionDetailsBean.placeBid();
@@ -136,7 +183,7 @@ class AuctionDetailsBeanTest {
     @Test
     void placeBid_WhenBidAmountInvalid_ShouldShowError() {
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         auctionDetailsBean.init();
         auctionDetailsBean.setBidAmount(BigDecimal.ZERO);
 
@@ -150,7 +197,7 @@ class AuctionDetailsBeanTest {
     @Test
     void placeBid_WhenBidAmountIsNull_ShouldShowError() {
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         auctionDetailsBean.init();
         auctionDetailsBean.setBidAmount(null);
 
@@ -164,7 +211,8 @@ class AuctionDetailsBeanTest {
     @Test
     void placeBid_WhenUserNotFound_ShouldShowError() {
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        testAuction.setStartPrice(BigDecimal.ONE);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         when(userSession.getUser()).thenReturn(null);
         auctionDetailsBean.init();
         auctionDetailsBean.setBidAmount(BigDecimal.TEN);
@@ -179,18 +227,50 @@ class AuctionDetailsBeanTest {
     @Test
     void placeBid_WhenValidBid_ShouldSucceed() {
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        testAuction.setStartPrice(BigDecimal.ONE);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         when(userSession.getUser()).thenReturn(testUser);
         auctionDetailsBean.init();
         auctionDetailsBean.setBidAmount(BigDecimal.TEN);
 
         auctionDetailsBean.placeBid();
 
-        verify(bidService).saveBid(any(Bid.class));
-        verify(auctionService).saveAuction(testAuction);
+        verify(auctionService).addBidToAuction(testAuction.getAuctionId(), testUser, BigDecimal.TEN);
         verify(facesContext).addMessage(eq(null), argThat(message ->
                 message.getSeverity() == FacesMessage.SEVERITY_INFO &&
-                        message.getSummary().equals("Bid placed successfully.")));
+                        message.getSummary().equals("Oferta złożona pomyślnie!")));
+    }
+
+    @Test
+    void placeBid_WhenBidAmountIsLowerOrEqualToCurrentHighestPrice_ShouldShowError() {
+        auctionDetailsBean.setId(1L);
+        testAuction.setStartPrice(BigDecimal.TEN);
+        testAuction.setAuctionId(1L);  // <-- This line is important
+
+        Bid bid20 = new Bid();
+        bid20.setBidId(1L);
+        bid20.setBidAmount(BigDecimal.valueOf(20));
+        Bid bid30 = new Bid();
+        bid30.setBidId(2L);
+        bid30.setBidAmount(BigDecimal.valueOf(30));
+
+        Set<Bid> bids = new HashSet<>();
+        bids.add(bid20);
+        bids.add(bid30);
+        testAuction.setBids(bids);
+
+        auctionDetailsBean.init();
+
+        auctionDetailsBean.setBidAmount(BigDecimal.valueOf(20)); // less than highest (30)
+
+        auctionDetailsBean.placeBid();
+
+        verify(auctionService, never()).addBidToAuction(anyLong(), any(), any());
+        ArgumentCaptor<FacesMessage> captor = ArgumentCaptor.forClass(FacesMessage.class);
+        verify(facesContext).addMessage(eq(null), captor.capture());
+        FacesMessage actualMessage = captor.getValue();
+        assertEquals(FacesMessage.SEVERITY_ERROR, actualMessage.getSeverity());
+        assertTrue(actualMessage.getSummary().contains("Twoja oferta musi być wyższa niż obecna cena"));
     }
 
     @Test
@@ -199,7 +279,7 @@ class AuctionDetailsBeanTest {
         bidder.setUserId(2L);
 
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         when(userSession.isLoggedIn()).thenReturn(true);
         when(userSession.getUser()).thenReturn(bidder);
         auctionDetailsBean.init();
@@ -225,7 +305,7 @@ class AuctionDetailsBeanTest {
     void canPlaceBid_WhenUserNotLoggedIn_ShouldReturnFalse() throws Exception {
         // Arrange
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         auctionDetailsBean.init();
 
         when(userSession.isLoggedIn()).thenReturn(false);
@@ -241,7 +321,7 @@ class AuctionDetailsBeanTest {
     void canPlaceBid_WhenUserIsAuctionOwner_ShouldReturnFalse() throws Exception {
         // Arrange
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         auctionDetailsBean.init();
 
         when(userSession.isLoggedIn()).thenReturn(true);
@@ -259,7 +339,7 @@ class AuctionDetailsBeanTest {
         // Arrange
         testAuction.setStatus(AuctionStatus.ENDED);
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         auctionDetailsBean.init();
 
         when(userSession.isLoggedIn()).thenReturn(true);
@@ -286,7 +366,7 @@ class AuctionDetailsBeanTest {
     @Test
     void deleteAuction_WhenUserNotLoggedIn_ShouldShowError() {
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         when(userSession.isLoggedIn()).thenReturn(false);
         auctionDetailsBean.init();
 
@@ -303,7 +383,7 @@ class AuctionDetailsBeanTest {
         differentUser.setUserId(2L);
 
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         when(userSession.isLoggedIn()).thenReturn(true);
         when(userSession.getUser()).thenReturn(differentUser);
         auctionDetailsBean.init();
@@ -318,7 +398,7 @@ class AuctionDetailsBeanTest {
     @Test
     void deleteAuction_WhenSuccessful_ShouldRedirect() throws IOException {
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         when(userSession.isLoggedIn()).thenReturn(true);
         when(userSession.getUser()).thenReturn(testUser);
         when(auctionService.deleteAuction(1L)).thenReturn(true);
@@ -334,7 +414,7 @@ class AuctionDetailsBeanTest {
     void deleteAuction_WhenRedirectThrowsException_ShouldShowErrorMessage() throws Exception {
         // Arrange
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         when(userSession.isLoggedIn()).thenReturn(true);
         when(userSession.getUser()).thenReturn(testUser);
         auctionDetailsBean.init();
@@ -359,7 +439,7 @@ class AuctionDetailsBeanTest {
     @Test
     void isAuctionOwner_WhenOwner_ShouldReturnTrue() {
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         when(userSession.getUser()).thenReturn(testUser);
         auctionDetailsBean.init();
 
@@ -370,7 +450,7 @@ class AuctionDetailsBeanTest {
     void isAuctionOwner_WhenUserIsOwner_ShouldReturnTrue() {
         // Arrange
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         when(userSession.getUser()).thenReturn(testUser);
         auctionDetailsBean.init();
 
@@ -388,7 +468,7 @@ class AuctionDetailsBeanTest {
         differentUser.setUserId(2L);
 
         auctionDetailsBean.setId(1L);
-        when(auctionService.getAuction(1L)).thenReturn(testAuction);
+        when(auctionService.getAuctionWithBids(1L)).thenReturn(testAuction);
         when(userSession.getUser()).thenReturn(differentUser);
         auctionDetailsBean.init();
 

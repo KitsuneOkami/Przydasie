@@ -2,27 +2,40 @@ package org.example.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AuctionTest {
 
-    @Mock
-    private Auction activeAuction;
-    private Auction endedAuction;
+    private Auction auction;
+    private Bid bid;
 
     @BeforeEach
     void setUp() {
-        // Initialize test data
-        activeAuction = new Auction();
-        activeAuction.setAuctionId(1L);
-        activeAuction.setStatus(Auction.AuctionStatus.ACTIVE);
+        auction = new Auction();
+        auction.setAuctionId(1L);
+        auction.setBids(new HashSet<>());
 
-        endedAuction = new Auction();
-        endedAuction.setAuctionId(2L);
-        activeAuction.setStatus(Auction.AuctionStatus.ENDED);
+        bid = new Bid();
+        bid.setBidId(1L);
+        bid.setBidAmount(BigDecimal.TEN);
+    }
+
+    @Test
+    void removeBid_ShouldRemoveBidAndUnsetAuction() {
+        // Arrange
+        auction.addBid(bid);
+        assertTrue(auction.getBids().contains(bid));
+        assertEquals(auction, bid.getAuction());
+
+        // Act
+        auction.removeBid(bid);
+
+        // Assert
+        assertFalse(auction.getBids().contains(bid), "Bid should be removed from auction's bids");
+        assertNull(bid.getAuction(), "Bid's auction reference should be null after removal");
     }
 }

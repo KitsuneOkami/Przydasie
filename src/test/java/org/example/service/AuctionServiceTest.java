@@ -3,6 +3,7 @@ package org.example.service;
 import org.example.dao.AuctionDao;
 import org.example.model.Auction;
 import org.example.model.Bid;
+import org.example.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -88,6 +89,33 @@ class AuctionServiceTest {
         // Assert
         assertNull(result);
         verify(auctionDao).find(999L);
+    }
+
+    @Test
+    void getAuctionWithBids_ShouldReturnAuctionFromDao() {
+        Long auctionId = 1L;
+        Auction auctionWithBids = new Auction();
+        auctionWithBids.setAuctionId(auctionId);
+
+        when(auctionDao.findWithBids(auctionId)).thenReturn(auctionWithBids);
+
+        Auction result = auctionService.getAuctionWithBids(auctionId);
+
+        assertNotNull(result);
+        assertEquals(auctionWithBids, result);
+        verify(auctionDao).findWithBids(auctionId);
+    }
+
+    @Test
+    void addBidToAuction_ShouldDelegateToDao() {
+        Long auctionId = 1L;
+        User user = new User();
+        user.setUserId(10L);
+        BigDecimal bidAmount = BigDecimal.valueOf(200);
+
+        auctionService.addBidToAuction(auctionId, user, bidAmount);
+
+        verify(auctionDao).addBid(auctionId, user, bidAmount);
     }
 
     @Test
