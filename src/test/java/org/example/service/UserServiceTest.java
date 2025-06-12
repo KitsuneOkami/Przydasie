@@ -2,11 +2,14 @@ package org.example.service;
 
 import jakarta.persistence.NoResultException;
 import org.example.dao.UserDao;
+import org.example.model.Admin;
+import org.example.model.PawnShop;
 import org.example.model.User;
 import org.example.util.PasswordUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -40,6 +43,78 @@ class UserServiceTest {
         user.setName(VALID_USERNAME);
         user.setEmail(VALID_EMAIL);
         user.setPassword(HASHED_PASSWORD);
+
+        userDao = mock(UserDao.class);
+        userService = new UserService();
+
+        // Inject userDao via reflection since no setter
+        try {
+            var field = UserService.class.getDeclaredField("userDao");
+            field.setAccessible(true);
+            field.set(userService, userDao);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void addAdmin_shouldCreateAdminWithHashedPasswordAndSave() {
+        String username = "adminUser";
+        String email = "admin@example.com";
+        String password = "plainPassword";
+        String hashedPassword = "hashedPassword";
+        String firstName = "John";
+        String lastName = "Doe";
+
+        try (MockedStatic<PasswordUtil> passwordUtilMock = mockStatic(PasswordUtil.class)) {
+            passwordUtilMock.when(() -> PasswordUtil.hash(password)).thenReturn(hashedPassword);
+
+            userService.addAdmin(username, email, password, firstName, lastName);
+
+            ArgumentCaptor<Admin> captor = ArgumentCaptor.forClass(Admin.class);
+            verify(userDao).save(captor.capture());
+            Admin savedAdmin = captor.getValue();
+
+            assertEquals(username, savedAdmin.getName());
+            assertEquals(email, savedAdmin.getEmail());
+            assertEquals(hashedPassword, savedAdmin.getPassword());
+            assertEquals(User.Role.ADMIN, savedAdmin.getRole());
+            assertEquals(firstName, savedAdmin.getFirstName());
+            assertEquals(lastName, savedAdmin.getLastName());
+
+            passwordUtilMock.verify(() -> PasswordUtil.hash(password));
+        }
+    }
+
+    @Test
+    void addPawnShop_shouldCreatePawnShopWithHashedPasswordAndSave() {
+        String username = "pawnShopUser";
+        String email = "pawnshop@example.com";
+        String password = "plainPassword";
+        String hashedPassword = "hashedPassword";
+        String businessName = "Business Inc.";
+        String taxId = "1234567890";
+        String payoutDetails = "Bank account info";
+
+        try (MockedStatic<PasswordUtil> passwordUtilMock = mockStatic(PasswordUtil.class)) {
+            passwordUtilMock.when(() -> PasswordUtil.hash(password)).thenReturn(hashedPassword);
+
+            userService.addPawnShop(username, email, password, businessName, taxId, payoutDetails);
+
+            ArgumentCaptor<PawnShop> captor = ArgumentCaptor.forClass(PawnShop.class);
+            verify(userDao).save(captor.capture());
+            PawnShop savedShop = captor.getValue();
+
+            assertEquals(username, savedShop.getName());
+            assertEquals(email, savedShop.getEmail());
+            assertEquals(hashedPassword, savedShop.getPassword());
+            assertEquals(User.Role.PAWN_SHOP, savedShop.getRole());
+            assertEquals(businessName, savedShop.getBusinessName());
+            assertEquals(taxId, savedShop.getTaxId());
+            assertEquals(payoutDetails, savedShop.getPayoutDetails());
+
+            passwordUtilMock.verify(() -> PasswordUtil.hash(password));
+        }
     }
 
     @Test
