@@ -12,7 +12,6 @@ import org.example.model.User.Role;
 import org.example.service.BansService;
 import org.example.service.UserService;
 import org.example.util.JSFUtil;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.logging.Level;
@@ -98,31 +97,38 @@ public class BanBean
 
 	public void addPawnShop()
 	{
-		if(!validateUsername(shopUsername))
+		if(!validateUsername(shopUsername) || !validatePawnShopFields())
+		{
 			return;
-
+		}
 		try
 		{
 			userService.addPawnShop(shopUsername, shopEmail, shopPassword, businessName, taxId, payoutDetails);
 			logger.log(Level.INFO, "Pawn shop added successfully: {0}", shopUsername);
+			JSFUtil.addInfoMessage("Pomyślnie dodano lombard.");
 		} catch(Exception e)
 		{
 			logger.log(Level.SEVERE, "Failed to add pawn shop.", e);
+			JSFUtil.addErrorMessage("Wystąpił błąd podczas dodawania lombardu.");
 		}
 	}
 
 	public void addAdmin()
 	{
-		if(!validateUsername(adminUsername))
+		if (!validateUsername(adminUsername) || !validateAdminFields())
+		{
 			return;
+		}
 
 		try
 		{
 			userService.addAdmin(adminUsername, adminEmail, adminPassword, adminFirstName, adminLastName);
 			logger.log(Level.INFO, "Admin added successfully: {0}", adminUsername);
+			JSFUtil.addInfoMessage("Pomyślnie dodano admina.");
 		} catch(Exception e)
 		{
 			logger.log(Level.SEVERE, "Failed to add admin.", e);
+			JSFUtil.addErrorMessage("Wystąpił błąd podczas dodawania admina.");
 		}
 	}
 
@@ -167,6 +173,7 @@ public class BanBean
 		ban.setBannedUser(user);
 		bansService.save(ban);
 		logger.info("User "+banUsername+" has been banned successfully.");
+		JSFUtil.addInfoMessage("Pomyślnie zbanowano użytkownika.");
 	}
 
 	private boolean validateUsername(String username)
@@ -175,6 +182,50 @@ public class BanBean
 		{
 			logger.warning("Username passed is empty.");
 			JSFUtil.addErrorMessage("Nazwa użytkownika nie może być pusta.");
+			return false;
+		}
+		return true;
+	}
+
+	private boolean validateAdminFields() {
+		if (adminEmail == null || adminEmail.isEmpty()) {
+			JSFUtil.addErrorMessage("Email nie może być pusty.");
+			return false;
+		}
+		if (adminPassword == null || adminPassword.isEmpty()) {
+			JSFUtil.addErrorMessage("Hasło nie może być puste.");
+			return false;
+		}
+		if (adminFirstName == null || adminFirstName.isEmpty()) {
+			JSFUtil.addErrorMessage("Imię nie może być puste.");
+			return false;
+		}
+		if (adminLastName == null || adminLastName.isEmpty()) {
+			JSFUtil.addErrorMessage("Nazwisko nie może być puste.");
+			return false;
+		}
+		return true;
+	}
+
+	private boolean validatePawnShopFields() {
+		if (shopEmail == null || shopEmail.isEmpty()) {
+			JSFUtil.addErrorMessage("Email nie może być pusty.");
+			return false;
+		}
+		if (shopPassword == null || shopPassword.isEmpty()) {
+			JSFUtil.addErrorMessage("Hasło nie może być puste.");
+			return false;
+		}
+		if (businessName == null || businessName.isEmpty()) {
+			JSFUtil.addErrorMessage("Nazwa firmy nie może być pusta.");
+			return false;
+		}
+		if (taxId == null || taxId.isEmpty()) {
+			JSFUtil.addErrorMessage("NIP nie może być pusty.");
+			return false;
+		}
+		if (payoutDetails == null || payoutDetails.isEmpty()) {
+			JSFUtil.addErrorMessage("Szczegóły wypłat nie mogą być puste.");
 			return false;
 		}
 		return true;
