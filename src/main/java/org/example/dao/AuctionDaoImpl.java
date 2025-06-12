@@ -7,7 +7,9 @@ import org.example.model.User;
 import org.example.util.AbstractDaoImpl;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,7 +57,8 @@ public class AuctionDaoImpl extends AbstractDaoImpl<Auction, Long> implements Au
 	}
 
 	@Override
-	public Auction findWithBids(Long auctionId) {
+	public Auction findWithBids(Long auctionId)
+	{
 		return getEntityManager()
 				.createQuery("""
 						SELECT DISTINCT a FROM Auction a
@@ -67,6 +70,37 @@ public class AuctionDaoImpl extends AbstractDaoImpl<Auction, Long> implements Au
 				.getSingleResult();
 	}
 
+	@Override
+	public List<Auction> findAllWinningAuctions()
+	{
+		return getEntityManager().createQuery("SELECT a FROM Auction a WHERE a.status = :status AND a.endTime <= :now", Auction.class)
+				.setParameter("status", Auction.AuctionStatus.ACTIVE)
+				.setParameter("now", LocalDateTime.now())
+				.getResultList();
+	}
+
+	@Override
+	public Optional<Bid> findHighestBid(Long auctionId)
+	{
+		try
+		{
+			return Optional.ofNullable(getEntityManager()
+					.createQuery("""
+							SELECT b FROM Bid b
+							WHERE b.auction.auctionId = :auctionId
+							AND b.bidAmount = (
+								SELECT MAX(b2.bidAmount) FROM Bid b2
+								WHERE b2.auction.auctionId = :auctionId
+							)
+							""", Bid.class)
+					.setParameter("auctionId", auctionId)
+					.getSingleResult());
+		} catch(Exception e)
+		{
+			logger.log(Level.WARNING, "No bids found for auction ID: {0}", auctionId);
+			return Optional.empty();
+		}
+	}
 
 
 }

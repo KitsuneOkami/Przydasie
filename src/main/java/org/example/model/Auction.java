@@ -3,6 +3,7 @@ package org.example.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ import java.util.logging.Logger;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "auction")
 public class Auction implements Serializable
@@ -31,8 +33,10 @@ public class Auction implements Serializable
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@EqualsAndHashCode.Include
+	@ToString.Include
 	private Long auctionId;
 
+	@ToString.Include
 	private String name;
 
 	private String description;

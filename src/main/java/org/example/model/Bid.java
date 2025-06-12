@@ -3,6 +3,7 @@ package org.example.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -10,6 +11,7 @@ import java.util.logging.Logger;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "bid")
 public class Bid implements Serializable
@@ -19,6 +21,7 @@ public class Bid implements Serializable
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@EqualsAndHashCode.Include
+	@ToString.Include
 	private Long bidId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -29,5 +32,6 @@ public class Bid implements Serializable
 	@JoinColumn(name = "user_id", nullable = false)
 	private User bidder;
 
+	@ToString.Include
 	private BigDecimal bidAmount;
 }

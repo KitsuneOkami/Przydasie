@@ -7,6 +7,7 @@ import org.example.util.AbstractDao;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface AuctionDao extends AbstractDao<Auction, Long>
 {
@@ -15,4 +16,8 @@ public interface AuctionDao extends AbstractDao<Auction, Long>
 	void addBid(Long auctionId, User user, BigDecimal bidAmount);
 
 	Auction findWithBids(Long id);
+
+	List<Auction> findAllWinningAuctions();
+
+	Optional<Bid> findHighestBid(Long auctionId);
 }

@@ -2,7 +2,6 @@ package org.example.service;
 
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import org.example.dao.AuctionDao;
 import org.example.model.Auction;
 import org.example.model.Bid;
@@ -10,6 +9,7 @@ import org.example.model.User;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +25,12 @@ public class AuctionService
 	{
 		logger.log(Level.INFO, "Saving auction: {0}", auction);
 		auctionDao.save(auction);
+	}
+
+	public void updateAuction(Auction auction)
+	{
+		logger.log(Level.INFO, "Updating auction: {0}", auction);
+		auctionDao.update(auction);
 	}
 
 	public Auction getAuction(Long id)
@@ -73,5 +79,15 @@ public class AuctionService
 	public Auction getAuctionWithBids(Long id)
 	{
 		return auctionDao.findWithBids(id);
+	}
+
+	public List<Auction> getAllWinningAuctions()
+	{
+		return auctionDao.findAllWinningAuctions();
+	}
+
+	public Optional<Bid> getHighestBid(Long auctionId)
+	{
+		return auctionDao.findHighestBid(auctionId);
 	}
 }
