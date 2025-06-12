@@ -38,4 +38,25 @@ public class BanDaoImpl extends AbstractDaoImpl<Ban, Long> implements BanDao
 				.createQuery("SELECT b FROM Ban b JOIN FETCH b.bannedUser", Ban.class)
 				.getResultList();
 	}
+
+	@Override
+	public boolean isUserBanned(Long userId)
+	{
+		logger.log(Level.INFO, "Checking if user with ID {0} is banned.", userId);
+		List<Ban> bans = getEntityManager()
+				.createQuery("SELECT b FROM Ban b WHERE b.bannedUser.userId = :userId", Ban.class)
+				.setParameter("userId", userId)
+				.getResultList();
+
+		for(Ban ban : bans)
+		{
+			if(ban.getEndDate()==null||ban.getEndDate().isAfter(LocalDateTime.now()))
+			{
+				logger.log(Level.INFO, "User with ID {0} is currently banned.", userId);
+				return true;
+			}
+		}
+		logger.log(Level.INFO, "User with ID {0} is not banned.", userId);
+		return false;
+	}
 }

@@ -38,15 +38,7 @@ public class BansService
 	public boolean isUserBanned(User user)
 	{
 		logger.log(Level.INFO, "Checking if user {0} is banned.", user.getName());
-		List<Ban> bans = banDao.findAll();
-		for(Ban ban : bans)
-			if(ban.getBannedUser().equals(user)&&(ban.getEndDate()==null||ban.getEndDate().isAfter(LocalDateTime.now())))
-			{
-				logger.log(Level.INFO, "User {0} is currently banned.", user.getName());
-				return true;
-			}
-		logger.log(Level.INFO, "User {0} is not banned.", user.getName());
-		return false;
+		return banDao.isUserBanned(user.getUserId());
 	}
 
 	public void save(Ban ban)
