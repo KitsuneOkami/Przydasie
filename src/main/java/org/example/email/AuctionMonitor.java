@@ -26,7 +26,7 @@ public class AuctionMonitor
 	@Inject
 	private AuctionService auctionService;
 
-	@Schedule(hour = "*", minute = "*", second = "*/15", persistent = false) // runs every 1 minute
+	@Schedule(hour = "*", minute = "*/1", persistent = false) // runs every 1 minute
 	@Transactional
 	public void checkAuctions()
 	{
