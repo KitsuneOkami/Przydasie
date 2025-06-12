@@ -4,11 +4,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BanListTest {
+class BanTest
+{
 
     @Test
     void constructor_ShouldCreateInstance() {
-        BanList banList = new BanList();
-        assertNotNull(banList, "BanList instance should not be null");
+        Ban ban = new Ban();
+        assertNotNull(ban, "BanList instance should not be null");
     }
 }

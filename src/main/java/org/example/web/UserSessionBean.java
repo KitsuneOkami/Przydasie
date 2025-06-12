@@ -23,6 +23,7 @@ public class UserSessionBean implements Serializable
 	private String username;
 	@Getter
 	private User user;
+
 	@PostConstruct
 	public void init()
 	{

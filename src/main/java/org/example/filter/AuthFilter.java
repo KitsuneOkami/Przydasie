@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebFilter(urlPatterns = {"/auction_new.xhtml", "/auction_details.xhtml", "/user/*"})
+@WebFilter(urlPatterns = {"/auction_new.xhtml", "/auction_details.xhtml"})
 public class AuthFilter implements Filter
 {
 	private static final Logger logger = Logger.getLogger(AuthFilter.class.getName());

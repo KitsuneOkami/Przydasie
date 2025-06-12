@@ -4,7 +4,10 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.persistence.NoResultException;
 import org.example.dao.UserDao;
+import org.example.model.Admin;
+import org.example.model.PawnShop;
 import org.example.model.User;
+import org.example.util.JSFUtil;
 import org.example.util.PasswordUtil;
 
 import java.util.Optional;
@@ -17,13 +20,15 @@ public class UserService
 	private static final Logger logger = Logger.getLogger(UserService.class.getName());
 	@Inject
 	private UserDao userDao;
+
 	public Optional<User> authenticate(String username, String password)
 	{
 		logger.log(Level.INFO, "Authenticating user: {0}", username);
 		try
 		{
 			Optional<User> found = userDao.findByName(username);
-			if(found.isPresent()&&PasswordUtil.check(password, found.get().getPassword())) {
+			if(found.isPresent()&&PasswordUtil.check(password, found.get().getPassword()))
+			{
 				logger.log(Level.INFO, "User {0} authenticated successfully.", username);
 				return found;
 			}
@@ -42,14 +47,50 @@ public class UserService
 		return found.orElse(null);
 	}
 
+	public void addAdmin(String username, String email, String password, String firstName, String lastName)
+	{
+		logger.log(Level.INFO, "Adding admin: {0}", username);
+
+		Admin admin = new Admin();
+		admin.setName(username);
+		admin.setEmail(email);
+		admin.setPassword(PasswordUtil.hash(password));
+		admin.setRole(User.Role.ADMIN);
+		admin.setFirstName(firstName);
+		admin.setLastName(lastName);
+
+		userDao.save(admin);
+		logger.log(Level.INFO, "Admin {0} added successfully.", username);
+	}
+
+	public void addPawnShop(String username, String email, String password, String businessName, String taxId, String payoutDetails)
+	{
+		logger.log(Level.INFO, "Adding pawn shop: {0}", username);
+
+		PawnShop shop = new PawnShop();
+		shop.setName(username);
+		shop.setEmail(email);
+		shop.setPassword(PasswordUtil.hash(password));
+		shop.setRole(User.Role.PAWN_SHOP);
+		shop.setBusinessName(businessName);
+		shop.setTaxId(taxId);
+		shop.setPayoutDetails(payoutDetails);
+
+		userDao.save(shop);
+		logger.log(Level.INFO, "Pawn shop {0} added successfully.", username);
+	}
+
 	public boolean usernameOrEmailTaken(String username, String email)
 	{
 		logger.log(Level.INFO, "Checking if username ''{0}'' or email ''{1}'' is taken.", new Object[]{username, email});
 		Optional<User> found = userDao.findByName(username);
 		boolean result = found.isPresent()&&found.get().getEmail().equals(email);
-		if(result) {
+		if(result)
+		{
 			logger.log(Level.WARNING, "Username ''{0}'' and email ''{1}'' are already taken.", new Object[]{username, email});
-		} else {
+		}
+		else
+		{
 			logger.log(Level.INFO, "Username ''{0}'' and email ''{1}'' are available.", new Object[]{username, email});
 		}
 		return result;
