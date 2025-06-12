@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="template_contentpage.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:define name="pageTitle">PrzydaSie – Inwentarz Lombardu</ui:define>
+
+    <ui:define name="content">
+        <div class="container mt-4 mb-5">
+            <h1 class="h2 mb-4">Inwentarz Lombardu</h1>
+
+            <!-- New Item Button -->
+            <h:form>
+                <div class="mb-4">
+                    <h:commandButton value="Dodaj Nowy Przedmiot" action="pawnshop_item_create.xhtml"
+                                     styleClass="btn btn-success"/>
+                </div>
+            </h:form>
+
+            <!-- Table -->
+            <h:panelGroup rendered="#{pawnShopListBean.pawnShopItems.isEmpty()}">
+                <div class="alert alert-info text-center" role="alert">
+                    Aktualnie brak przedmiotów w lombardzie.
+                </div>
+            </h:panelGroup>
+
+            <!-- Time Selector -->
+            <h:form>
+                <div class="mb-3">
+                    <label for="auctionDuration" class="form-label">Czas trwania aukcji:</label>
+                    <div class="d-flex gap-2">
+                        <h:inputText id="days" value="#{pawnShopListBean.days}" styleClass="form-control" type="number"
+                                     min="0" placeholder="Dni">
+                            <f:validateLongRange minimum="0"/>
+                        </h:inputText>
+                        <h:inputText id="hours" value="#{pawnShopListBean.hours}" styleClass="form-control"
+                                     type="number"
+                                     min="0" max="23" placeholder="Godziny">
+                            <f:validateLongRange minimum="0" maximum="23"/>
+                        </h:inputText>
+                        <h:inputText id="minutes" value="#{pawnShopListBean.minutes}" styleClass="form-control"
+                                     type="number" min="0" max="59" placeholder="Minuty">
+                            <f:validateLongRange minimum="0" maximum="59"/>
+                        </h:inputText>
+                        <h:inputText id="seconds" value="#{pawnShopListBean.seconds}" styleClass="form-control"
+                                     type="number" min="0" max="59" placeholder="Sekundy">
+                            <f:validateLongRange minimum="0" maximum="59"/>
+                        </h:inputText>
+                    </div>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nazwa</th>
+                        <th>Opis</th>
+                        <th>Cena</th>
+                        <th>Akcja</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <ui:repeat value="#{pawnShopListBean.pawnShopItems}" var="item">
+                        <tr>
+                            <td>#{item.itemId}</td>
+                            <td>#{item.name}</td>
+                            <td>#{item.description}</td>
+                            <td>#{item.price}</td>
+                            <td>
+                                <h:commandButton value="Przekształć w Aukcję"
+                                                 action="#{pawnShopListBean.convertToAuction(item)}"
+                                                 styleClass="btn btn-primary btn-sm"/>
+                                <h:commandButton value="Usuń" action="#{pawnShopListBean.removeItem(item)}"
+                                                 styleClass="btn btn-danger btn-sm"/>
+                            </td>
+                        </tr>
+                    </ui:repeat>
+                    </tbody>
+                </table>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebFilter(urlPatterns = {"/auction_new.xhtml", "/auction_details.xhtml", "/bans.xhtml", "/pawnshops.xhtml"})
+@WebFilter(urlPatterns = {"/auction_new.xhtml", "/auction_details.xhtml", "/bans.xhtml", "/pawnshop_list.xhtml", "/pawnshop_item_create.xhtml"})
 public class AuthFilter implements Filter
 {
 	private static final Logger logger = Logger.getLogger(AuthFilter.class.getName());
@@ -64,7 +64,7 @@ public class AuthFilter implements Filter
 			JSFUtil.addErrorMessage("Dostęp do strony jest dozwolony tylko dla Administratorów.");
 			return;
 		}
-		else if (requestURI.endsWith("/pawnshops.xhtml") && user.getRole() != Role.PAWN_SHOP)
+		else if(requestURI.contains("pawnshop")&&user.getRole()!=Role.PAWN_SHOP)
 		{
 			logger.log(Level.WARNING, "User {0} does not have a PAWN_SHOP role. Redirecting to unauthorized page.", user.getName());
 			response.sendRedirect(request.getContextPath()+"/auctions.xhtml");

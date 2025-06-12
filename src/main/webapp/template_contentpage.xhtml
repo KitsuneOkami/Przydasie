@@ -23,7 +23,10 @@
                             <h:link value="Aukcje" outcome="/auctions.xhtml" styleClass="nav-link #{view.viewId.contains('auctions') ? 'active' : ''}"/>
                         </li>
                         <li class="nav-item">
-                            <h:link value="Zarządzanie" outcome="/bans.xhtml" styleClass="nav-link #{view.viewId.contains('bans') ? 'active' : ''}"/>
+                            <h:link value="Zarządzanie" outcome="/bans.xhtml" styleClass="nav-link #{view.viewId.contains('bans') ? 'active' : ''}" rendered="#{userSessionBean.user.role == 'ADMIN'}"/>
+                        </li>
+                        <li class="nav-item">
+                            <h:link value="Inwentarz Lombardu" outcome="/pawnshop_list.xhtml" styleClass="nav-link #{view.viewId.contains('pawnshops') ? 'active' : ''}" rendered="#{userSessionBean.user.role == 'PAWN_SHOP'}"/>
                         </li>
                     </ul>
                     <h:form styleClass="d-flex align-items-center">
