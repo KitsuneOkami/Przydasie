@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition template="template_contentpage.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:define name="pageTitle">PrzydaSie - Mój Profil</ui:define>
+
+    <ui:define name="content">
+        <div class="container mt-4 mb-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h1 class="h4 mb-0">Profil Użytkownika</h1>
+                        </div>
+                        <div class="card-body">
+                            <h:panelGroup rendered="#{not empty userSessionBean.user}">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <strong>Nazwa użytkownika:</strong>
+                                        <span>#{userSessionBean.user.name}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <strong>Email:</strong>
+                                        <span>#{userSessionBean.user.email}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <strong>Rola:</strong>
+                                        <span class="badge bg-primary rounded-pill">#{userSessionBean.user.role}</span>
+                                    </li>
+                                </ul>
+
+                                <h:panelGroup rendered="#{userSessionBean.user.role == 'ADMIN'}">
+                                    <h4 class="mt-4">Dane Administratora</h4>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <strong>Imię:</strong>
+                                            <span>#{userSessionBean.user.firstName}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <strong>Nazwisko:</strong>
+                                            <span>#{userSessionBean.user.lastName}</span>
+                                        </li>
+                                    </ul>
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{userSessionBean.user.role == 'PAWN_SHOP'}">
+                                    <h4 class="mt-4">Dane Lombardu</h4>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <strong>Nazwa firmy:</strong>
+                                            <span>#{userSessionBean.user.businessName}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <strong>NIP:</strong>
+                                            <span>#{userSessionBean.user.taxId}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <strong>Szczegóły wypłat:</strong>
+                                            <span>#{userSessionBean.user.payoutDetails}</span>
+                                        </li>
+                                    </ul>
+                                </h:panelGroup>
+
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{empty userSessionBean.user}">
+                                <div class="alert alert-warning" role="alert">
+                                    Nie jesteś zalogowany.
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

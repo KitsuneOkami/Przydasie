@@ -4,7 +4,10 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.example.model.User;
+import org.example.service.BansService;
 import org.example.web.UserSessionBean;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,6 +23,9 @@ class AuthFilterTest {
 
     @Mock
     private UserSessionBean userSessionBean;
+
+    @Mock
+    private BansService bansService;
 
     @Mock
     private HttpServletRequest request;
@@ -39,18 +45,24 @@ class AuthFilterTest {
     private static final String CONTEXT_PATH = "/app";
     private static final String LOGIN_PAGE = "/login.xhtml";
 
-    /*
     @BeforeEach
     void setUp() {
-        when(request.getContextPath()).thenReturn(CONTEXT_PATH);
+        lenient().when(request.getContextPath()).thenReturn(CONTEXT_PATH);
     }
-    */
 
     @Test
     void doFilter_WhenUserLoggedInAndSessionExists_ShouldContinueChain() throws IOException, ServletException {
         // Arrange
+        User testUser = new User();
+        testUser.setUserId(1L);
+        testUser.setRole(User.Role.USER);
+        testUser.setName("testuser");
+
         when(request.getSession(false)).thenReturn(session);
         when(userSessionBean.isLoggedIn()).thenReturn(true);
+        when(userSessionBean.getUser()).thenReturn(testUser);
+        when(bansService.isUserBanned(testUser)).thenReturn(false);
+        when(request.getRequestURI()).thenReturn(CONTEXT_PATH + "/some_allowed_page.xhtml");
 
         // Act
         authFilter.doFilter(request, response, chain);
@@ -65,7 +77,6 @@ class AuthFilterTest {
         // Arrange
         when(request.getSession(false)).thenReturn(session);
         when(userSessionBean.isLoggedIn()).thenReturn(false);
-        when(request.getContextPath()).thenReturn(CONTEXT_PATH);
 
         // Act
         authFilter.doFilter(request, response, chain);
@@ -79,7 +90,6 @@ class AuthFilterTest {
     void doFilter_WhenSessionIsNull_ShouldRedirectToLogin() throws IOException, ServletException {
         // Arrange
         when(request.getSession(false)).thenReturn(null);
-        when(request.getContextPath()).thenReturn(CONTEXT_PATH);
 
         // Act
         authFilter.doFilter(request, response, chain);

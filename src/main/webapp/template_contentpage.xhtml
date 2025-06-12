@@ -6,42 +6,48 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <ui:define name="navbar">
+
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
             <div class="container-fluid">
                 <h:link outcome="/auctions.xhtml" styleClass="navbar-brand">
                     <i class="fas fa-gavel me-2"></i>PrzydaSie™
                 </h:link>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
                         <li class="nav-item">
                             <h:link value="Aukcje" outcome="/auctions.xhtml" styleClass="nav-link #{view.viewId.contains('auctions') ? 'active' : ''}"/>
                         </li>
                         <li class="nav-item">
-                            <h:link value="Zarządzanie" outcome="/bans.xhtml" styleClass="nav-link #{view.viewId.contains('bans') ? 'active' : ''}" rendered="#{userSessionBean.user.role == 'ADMIN'}"/>
-                        </li>
-                        <li class="nav-item">
-                            <h:link value="Inwentarz Lombardu" outcome="/pawnshops.xhtml" styleClass="nav-link #{view.viewId.contains('pawnshops') ? 'active' : ''}" rendered="#{userSessionBean.user.role == 'PAWN_SHOP'}"/>
+                            <h:link value="Zarządzanie" outcome="/bans.xhtml" styleClass="nav-link #{view.viewId.contains('bans') ? 'active' : ''}"/>
                         </li>
                     </ul>
                     <h:form styleClass="d-flex align-items-center">
                         <c:choose>
+
                             <c:when test="#{not empty userSessionBean.username}">
                                 <span class="navbar-text me-3">
                                     Witaj, <strong>#{userSessionBean.username}</strong>
-                                </span>
+
+                                 </span>
+                                <h:link value="Mój Profil" outcome="/profile.xhtml" styleClass="btn btn-outline-light btn-sm me-2"/>
                                 <h:commandLink value="Wyloguj" action="#{loginBean.logout}" styleClass="btn btn-light btn-sm"/>
                             </c:when>
+
                             <c:otherwise>
                                 <h:link value="Zaloguj" outcome="/login.xhtml" styleClass="btn btn-outline-light me-2"/>
                                 <h:link value="Zarejestruj się" outcome="/register.xhtml" styleClass="btn btn-light"/>
+
                             </c:otherwise>
                         </c:choose>
                     </h:form>
                 </div>
             </div>
+
         </nav>
     </ui:define>
 
